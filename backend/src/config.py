@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     rate_limit_max_requests: int = 120
     rate_limit_window: int = 60
     rate_limit_trust_forwarded_for: bool = False
+    rate_limit_trusted_proxies: str = ""
     auth_rate_limit_max_requests: int = 10
     auth_rate_limit_window: int = 300
 

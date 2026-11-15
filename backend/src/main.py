@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import cors_origins, settings
 from src.logging_config import configure_logging
+from src.middleware.client_ip import TrustedProxyMiddleware
 from src.middleware.rate_limit import RateLimitMiddleware
 from src.middleware.request_id import RequestIdMiddleware
+from src.middleware.validation import validation_error_response
 from src.modules.admin.controller import admin_router
 from src.modules.auth.controller import auth_router
 from src.modules.auth.service.security import validate_security_settings
@@ -47,6 +50,8 @@ app = FastAPI(
     openapi_url="/openapi.json" if _docs_enabled else None,
 )
 
+app.add_exception_handler(RequestValidationError, validation_error_response)
+
 app.add_middleware(RequestIdMiddleware)
 
 app.add_middleware(
@@ -55,6 +60,7 @@ app.add_middleware(
     window=settings.rate_limit_window,
     trust_forwarded_for=settings.rate_limit_trust_forwarded_for,
 )
+app.add_middleware(TrustedProxyMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins(),

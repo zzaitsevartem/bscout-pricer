@@ -1,3 +1,4 @@
+import hashlib
 import logging
 
 import httpx
@@ -5,6 +6,7 @@ import pytest
 from fastapi import FastAPI
 from redis.exceptions import ConnectionError as RedisConnectionError
 
+from src.config import settings
 from src.middleware import rate_limit as rate_limit_module
 from src.middleware.rate_limit import (
     DEFAULT_AUTH_MAX_REQUESTS,
@@ -25,6 +27,15 @@ class FakeRedis:
     def _guard(self) -> None:
         if self.fail:
             raise RedisConnectionError("connection refused")
+
+    async def eval(self, script, numkeys, key, now, window, limit, member):
+        self._guard()
+        self._apply(("zremrangebyscore", key, float("-inf"), now - window))
+        if len(self.store[key]) >= limit:
+            return 0
+        self._apply(("zadd", key, {member: now}))
+        self._apply(("expire", key, window + 1))
+        return 1
 
     def pipeline(self, transaction: bool = True) -> "FakePipeline":
         return FakePipeline(self)
@@ -163,8 +174,12 @@ async def test_counters_live_in_redis_and_not_in_process_memory(clock, redis):
     await middleware.dispatch(FakeRequest(), call_next)
 
     assert middleware._requests == {}
-    assert [key for key in redis.store if key.endswith(":global:10.0.0.1")]
-    assert sum(len(bucket) for bucket in redis.store.values()) == 1
+    assert [
+        key
+        for key in redis.store
+        if key.endswith(":global:" + hashlib.sha256(b"10.0.0.1").hexdigest())
+    ]
+    assert sum(len(bucket) for bucket in redis.store.values()) == 2
 
 
 async def test_two_middleware_instances_share_one_redis_counter(clock, redis):
@@ -241,7 +256,8 @@ async def test_forwarded_for_is_ignored_when_it_is_not_trusted(clock, redis):
     assert len(call_next.calls) == 2
 
 
-async def test_forwarded_for_is_honoured_when_it_is_trusted(clock, redis):
+async def test_forwarded_for_is_honoured_when_it_is_trusted(clock, redis, monkeypatch):
+    monkeypatch.setattr(settings, "rate_limit_trusted_proxies", "10.0.0.0/24")
     middleware = build_middleware(redis, max_requests=1, trust_forwarded_for=True)
     call_next = CallNextSpy()
 
@@ -254,7 +270,8 @@ async def test_forwarded_for_is_honoured_when_it_is_trusted(clock, redis):
     assert (await middleware.dispatch(first, call_next)).status_code == 429
 
 
-async def test_trusted_forwarded_for_uses_the_original_client_hop(clock, redis):
+async def test_trusted_forwarded_for_uses_the_original_client_hop(clock, redis, monkeypatch):
+    monkeypatch.setattr(settings, "rate_limit_trusted_proxies", "10.0.0.0/24")
     middleware = build_middleware(redis, max_requests=1, trust_forwarded_for=True)
     call_next = CallNextSpy()
 
@@ -262,7 +279,11 @@ async def test_trusted_forwarded_for_uses_the_original_client_hop(clock, redis):
         FakeRequest(headers={"x-forwarded-for": " 9.9.9.9 , 10.0.0.5"}), call_next
     )
 
-    assert [key for key in redis.store if key.endswith(":global:9.9.9.9")]
+    assert [
+        key
+        for key in redis.store
+        if key.endswith(":global:" + hashlib.sha256(b"9.9.9.9").hexdigest())
+    ]
 
 
 async def test_trusted_forwarded_for_falls_back_to_peer_when_header_is_absent(clock, redis):
@@ -271,7 +292,11 @@ async def test_trusted_forwarded_for_falls_back_to_peer_when_header_is_absent(cl
 
     await middleware.dispatch(FakeRequest(host="10.0.0.7"), call_next)
 
-    assert [key for key in redis.store if key.endswith(":global:10.0.0.7")]
+    assert [
+        key
+        for key in redis.store
+        if key.endswith(":global:" + hashlib.sha256(b"10.0.0.7").hexdigest())
+    ]
 
 
 async def test_unreachable_redis_lets_the_request_through(clock, redis):
@@ -294,8 +319,8 @@ async def test_unreachable_redis_is_logged_as_a_warning(clock, redis, caplog):
 
     messages = [record.getMessage() for record in caplog.records]
 
-    assert any("redis unavailable" in message for message in messages)
-    assert any("connection refused" in message for message in messages)
+    assert any("store unavailable" in message for message in messages)
+    assert not any("connection refused" in message for message in messages)
 
 
 async def test_redis_recovering_restores_enforcement(clock, redis):
@@ -332,7 +357,9 @@ async def test_login_is_throttled_long_before_the_global_limit(clock, redis):
     assert len(call_next.calls) == 3
 
 
-@pytest.mark.parametrize("path", ["/api/auth/login", "/api/auth/register", "/api/auth/refresh"])
+@pytest.mark.parametrize(
+    "path", ["/api/auth/login", "/api/auth/register", "/api/auth/password-reset/confirm"]
+)
 async def test_every_credential_endpoint_uses_the_strict_limit(clock, redis, path):
     middleware = build_middleware(redis, max_requests=120, auth_max_requests=2, auth_window=300)
     call_next = CallNextSpy()

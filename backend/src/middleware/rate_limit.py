@@ -1,13 +1,18 @@
+import asyncio
+import hashlib
 import logging
 import time
 from uuid import uuid4
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
+from fastapi.security.utils import get_authorization_scheme_param
 from redis.exceptions import RedisError
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from src.config import settings
+from src.middleware.client_ip import client_ip
+from src.modules.auth.service.auth import decode_token
 from src.modules.cache.service.redis_cache import get_redis
 
 logger = logging.getLogger(__name__)
@@ -18,12 +23,11 @@ DEFAULT_AUTH_WINDOW = 300
 DEFAULT_AUTH_PATHS = (
     "/api/auth/login",
     "/api/auth/register",
-    "/api/auth/refresh",
     "/api/auth/password-reset/request",
     "/api/auth/password-reset/confirm",
     "/api/auth/password/change",
 )
-REDIS_ERRORS = (RedisError, OSError)
+REDIS_ERRORS = (RedisError, OSError, TimeoutError)
 THROTTLED_DETAIL = "Too many requests. Try again later."
 
 
@@ -77,13 +81,18 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return self.namespace
 
     def _client_key(self, request: Request) -> str:
-        if self.trust_forwarded_for:
-            forwarded = request.headers.get("x-forwarded-for")
-            if forwarded:
-                first = forwarded.split(",")[0].strip()
-                if first:
-                    return first
-        return request.client.host if request.client else "unknown"
+        scheme, token = get_authorization_scheme_param(
+            getattr(request, "headers", {}).get("authorization", "")
+        )
+        if scheme.lower() == "bearer":
+            payload = decode_token(token)
+            if (
+                payload
+                and payload.get("type") == "access"
+                and str(payload.get("sub", "")).isdigit()
+            ):
+                return f"user:{payload['sub']}"
+        return client_ip(request, self.trust_forwarded_for)
 
     def _is_auth_path(self, request: Request) -> bool:
         path = getattr(getattr(request, "url", None), "path", "") or ""
@@ -91,23 +100,50 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return any(normalized == candidate.rstrip("/") for candidate in self.auth_paths)
 
     def _buckets(self, request: Request) -> list[tuple[str, int, int]]:
+        path = getattr(getattr(request, "url", None), "path", "").rstrip("/")
+        method = getattr(request, "method", "GET")
+        if method == "OPTIONS" or path in {"/api/health", "/api/health/live", "/api/health/ready"}:
+            return []
+        if path == "/api/payment/webhook":
+            return [("webhook", 600, 60)]
         buckets = [("global", self.max_requests, self.window)]
-        if self._is_auth_path(request):
+        if self._is_auth_path(request) or (
+            path.startswith("/api/auth/")
+            and path
+            not in {"/api/auth/logout", "/api/auth/refresh", "/api/auth/username-available"}
+        ):
             buckets.insert(0, ("auth", self.auth_max_requests, self.auth_window))
+        if path.startswith(("/api/export", "/api/parser")) or (
+            path.startswith("/api/admin") and method not in {"GET", "HEAD"}
+        ):
+            buckets.insert(0, ("expensive", 10, 60))
+        elif path.startswith(("/api/search", "/api/products", "/api/devices")):
+            buckets.insert(0, ("search", 90, 60))
+        elif method not in {"GET", "HEAD"} and not path.startswith("/api/auth/"):
+            buckets.insert(0, ("write", 30, 60))
         return buckets
 
     async def _consume(self, redis, key: str, limit: int, window: int, now: float) -> bool:
-        member = f"{now:.6f}-{uuid4().hex}"
-        pipe = redis.pipeline()
-        pipe.zremrangebyscore(key, 0, now - window)
-        pipe.zadd(key, {member: now})
-        pipe.zcard(key)
-        pipe.expire(key, int(window) + 1)
-        results = await pipe.execute()
-        if int(results[2]) <= limit:
-            return True
-        await redis.zrem(key, member)
-        return False
+        result = await redis.eval(
+            """
+            local key = KEYS[1]
+            local now = tonumber(ARGV[1])
+            local window = tonumber(ARGV[2])
+            local limit = tonumber(ARGV[3])
+            redis.call('ZREMRANGEBYSCORE', key, '-inf', now - window)
+            if redis.call('ZCARD', key) >= limit then return 0 end
+            redis.call('ZADD', key, now, ARGV[4])
+            redis.call('EXPIRE', key, window + 1)
+            return 1
+            """,
+            1,
+            key,
+            now,
+            window,
+            limit,
+            uuid4().hex,
+        )
+        return bool(result)
 
     async def _retry_after(self, redis, key: str, window: int, now: float) -> int:
         oldest = await redis.zrange(key, 0, 0, withscores=True)
@@ -132,16 +168,38 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if limit <= 0:
                 return self._throttled(limit, max(1, int(window)))
 
+        if not buckets:
+            return None
         client_key = self._client_key(request)
         now = time.time()
         try:
             redis = self.redis_factory()
-            for scope, limit, window in buckets:
-                key = f"{self.namespace}:{scope}:{client_key}"
-                if not await self._consume(redis, key, limit, window, now):
-                    return self._throttled(limit, await self._retry_after(redis, key, window, now))
-        except REDIS_ERRORS as exc:
-            logger.warning("rate limit not enforced, redis unavailable: %s", exc)
+            async with asyncio.timeout(1):
+                for scope, limit, window in buckets:
+                    identity = (
+                        client_ip(request, self.trust_forwarded_for)
+                        if scope == "auth"
+                        else client_key
+                    )
+                    identity = hashlib.sha256(identity.encode()).hexdigest()
+                    key = f"{self.namespace}:{scope}:{identity}"
+                    if not await self._consume(redis, key, limit, window, now):
+                        return self._throttled(
+                            limit, await self._retry_after(redis, key, window, now)
+                        )
+        except REDIS_ERRORS:
+            logger.warning("rate limit store unavailable")
+            strict = any(
+                scope in {"auth", "expensive", "write", "webhook"} for scope, _, _ in buckets
+            )
+            if strict:
+                return JSONResponse(
+                    status_code=503,
+                    content={
+                        "detail": "Request protection temporarily unavailable. Try again later."
+                    },
+                    headers={"Retry-After": "5"},
+                )
         return None
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):

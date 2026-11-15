@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.config import settings
 from src.database import get_db
+from src.middleware.client_ip import client_ip
 from src.modules.auth.model.user import User
 from src.modules.auth.schema.auth import (
     LoginRequest,
@@ -41,14 +41,7 @@ INVALID_CREDENTIALS_DETAIL = "Invalid login or password"
 
 def _client_info(request: Request) -> tuple[str | None, str | None]:
     user_agent = request.headers.get("user-agent")
-    ip_address = None
-    if settings.rate_limit_trust_forwarded_for:
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            ip_address = forwarded.split(",")[0].strip()
-    if ip_address is None and request.client is not None:
-        ip_address = request.client.host
-    return user_agent, ip_address
+    return user_agent, client_ip(request)
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)

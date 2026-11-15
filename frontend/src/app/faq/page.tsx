@@ -45,7 +45,7 @@ export default function FaqPage() {
       <Header />
       <PageTransition className="max-w-[1200px] mx-auto px-6 py-12 pb-16">
         <div className="flex items-center gap-2 text-[14px] text-body-muted mb-4 flex-wrap">
-          <a href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">Главная</a>
+          <Link href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">Главная</Link>
           <span className="text-body-muted">/</span>
           <span>FAQ</span>
         </div>

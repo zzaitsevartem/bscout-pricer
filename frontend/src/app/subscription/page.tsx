@@ -1,7 +1,8 @@
 'use client';
 
 import { PageTransition } from '@/shared/ui/PageTransition';
-import React from 'react';
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/widgets/Header/ui/Header';
 import { Footer } from '@/widgets/Footer/ui/Footer';
@@ -76,6 +77,9 @@ function PendingPaymentNotice({ payment }: { payment: PaymentResponse }) {
 }
 
 function SubscriptionContent() {
+  const requestedPlan = useSearchParams().get('plan');
+  const selectedPlan = requestedPlan === 'basic' || requestedPlan === 'advanced'
+    ? requestedPlan : undefined;
   const subscription = useSubscription();
   const plans = usePlans();
   const history = usePaymentHistory();
@@ -182,11 +186,16 @@ function SubscriptionContent() {
                 <p className="text-[14px] text-clay mb-4">Не удалось создать платёж. Попробуйте позже.</p>
               )}
 
+              {selectedPlan && (
+                <p className="text-[15px] text-body mb-4">
+                  Вы выбрали тариф «{planLabel(selectedPlan)}». Нажмите кнопку его оформления ниже.
+                </p>
+              )}
               {plans.data && (
                 <div className="mb-8">
                   <TariffPlans
                     onSelect={handleSubscribe}
-                    selectedPlan={subscribe.isPending ? subscribe.variables?.plan : undefined}
+                    selectedPlan={subscribe.isPending ? subscribe.variables?.plan : selectedPlan}
                     subscribing={subscribe.isPending}
                   />
                 </div>
@@ -260,7 +269,7 @@ export default function SubscriptionPage() {
     <>
       <Header />
       <RequireAuth>
-        <SubscriptionContent />
+        <Suspense><SubscriptionContent /></Suspense>
       </RequireAuth>
     </>
   );

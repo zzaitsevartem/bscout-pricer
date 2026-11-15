@@ -52,6 +52,8 @@ export default function GlobalError({ error, reset }: { error: Error; reset: () 
             <button type="button" className="btn" onClick={reset}>
               Попробовать снова
             </button>
+            {/* Full reload also recovers a broken root layout. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a className="btn btn-secondary" href="/">
               На главную
             </a>

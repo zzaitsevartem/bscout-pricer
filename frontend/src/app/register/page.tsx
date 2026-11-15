@@ -1,9 +1,9 @@
 'use client';
 
 import { PageTransition } from '@/shared/ui/PageTransition';
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -39,8 +39,12 @@ const registerFormSchema = registerRequestSchema
 
 type RegisterFormValues = z.infer<typeof registerFormSchema>;
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
+  const selectedPlan = useSearchParams().get('plan');
+  const destination = selectedPlan === 'basic' || selectedPlan === 'advanced'
+    ? `/subscription?plan=${selectedPlan}`
+    : '/account';
   const registerMutation = useRegister();
   const plans = usePlans();
   const trialDays = plans.data?.find((plan) => plan.plan === 'trial')?.durationDays ?? 7;
@@ -64,7 +68,7 @@ export default function RegisterPage() {
         company: data.company || undefined,
       },
       {
-        onSuccess: () => router.push('/account'),
+        onSuccess: () => router.push(destination),
       },
     );
   };
@@ -298,4 +302,8 @@ export default function RegisterPage() {
       </PageTransition>
     </>
   );
+}
+
+export default function RegisterPage() {
+  return <Suspense><RegisterContent /></Suspense>;
 }

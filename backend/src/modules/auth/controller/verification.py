@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.config import settings
 from src.database import get_db
+from src.middleware.client_ip import client_ip
 from src.modules.auth.model.user import User
 from src.modules.auth.schema.verification import (
     EmailChangeCancelResponse,
@@ -38,15 +38,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 def _request_ip(request: Request) -> str | None:
-    if settings.rate_limit_trust_forwarded_for:
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            first = forwarded.split(",")[0].strip()
-            if first:
-                return first[:64]
-    if request.client is not None:
-        return request.client.host[:64]
-    return None
+    return client_ip(request)[:64]
 
 
 @router.post("/email/confirm", response_model=EmailConfirmResponse)

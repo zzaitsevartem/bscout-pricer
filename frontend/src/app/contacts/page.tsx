@@ -1,6 +1,7 @@
 'use client';
 
 import { PageTransition } from '@/shared/ui/PageTransition';
+import Link from 'next/link';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -119,9 +120,9 @@ export default function ContactsPage() {
       <Header />
       <PageTransition className="max-w-[1200px] mx-auto px-6 py-12 pb-16">
         <div className="flex items-center gap-2 text-[14px] text-body-muted mb-4 flex-wrap">
-          <a href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">
+          <Link href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">
             Главная
-          </a>
+          </Link>
           <span className="text-body-muted">/</span>
           <span>Контакты</span>
         </div>

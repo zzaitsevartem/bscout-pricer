@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { PageTransition } from '@/shared/ui/PageTransition';
 import type { Metadata } from 'next';
 import { Header } from '@/widgets/Header/ui/Header';
@@ -55,9 +56,9 @@ export default function TermsPage() {
       <Header />
       <PageTransition className="max-w-[1200px] mx-auto px-6 py-12 pb-16">
         <div className="flex items-center gap-2 text-[14px] text-body-muted mb-4 flex-wrap">
-          <a href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">
+          <Link href="/" className="text-body-subtle no-underline hover:text-slate hover:underline">
             Главная
-          </a>
+          </Link>
           <span className="text-body-muted">/</span>
           <span>Условия использования</span>
         </div>

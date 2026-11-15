@@ -2,6 +2,7 @@
 
 import { PageTransition } from '@/shared/ui/PageTransition';
 import React from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/widgets/Header/ui/Header';
 import { Footer } from '@/widgets/Footer/ui/Footer';
@@ -166,6 +167,7 @@ function ProductContent({ params }: { params: { id: string } }) {
   );
 }
 
-export default function ProductComparisonPage({ params }: { params: { id: string } }) {
+export default function ProductComparisonPage() {
+  const params = useParams<{ id: string }>();
   return <Shell><ProductContent params={params} /></Shell>;
 }

@@ -555,3 +555,30 @@
 - 2026-07-25 — Блок 01: реализованы Фазы 1–4 (auth e2e, Header+guards, кабинет+settings+history, подписка/тарифы). ~20 файлов фронта. Адверсариальное ревью 6 агентами (types/contracts — 0 находок), находки исправлены (RequireAdmin, failAuth, .btn-danger, unoptimized, alias). Backend-тесты 17 passed + починен баг тест-инфры (integration conftest). Не закрыт DoD: `npm run build/lint` (нет node_modules). Вопросы — в секции блока.
 - 2026-07-25 — Заведён Блок 01 (интеграция фронта с бэком). Фаза 0 (верификация бэка) закрыта: auth-flow подтверждён руками на `:8001`, JSON snake_case, подписка без данных → 404. Ветка `feature/frontend-integration`.
 - 2026-07-25 — Инициализирована система планирования (MASTERPLAN + INDEX + archive + MANUAL_VERIFICATION + `scripts/plan/` + SessionStart-хук).
+
+### Подготовка беты — develop-one, 2026-11-15
+
+Рабочая ветка `zzaitsev/develop-one-2026-11-15`, база `bscout/beta-fix-2026-15-11`.
+Критерии проверки: `.unlazy/develop-one/GATES.md` (контракт приёмки, не второй план).
+- [x] Rate limit: инвентаризация, proxy/user identity, Redis concurrency/outage, regression.
+- [x] Удалить чувствительные значения из validation responses и проверить auth/logging.
+- [x] Актуальные audits зависимостей, обновление manifests/locks, совместимость.
+- [x] Согласованный живой источник: импорт → offers → каталог → поиск → карточка → ссылка.
+- [x] Сохранение выбранного тарифа после регистрации без выдачи платного доступа.
+Этап 2 ожидает явного подтверждения владельца после доказательств по всему этапу 1.
+
+2026-11-15: изменения этапа 1 develop-one подготовлены без коммита; Ruff/diff-check прошли,
+npm audit 30→0, backend audit 26→3 записи (остаточные python-jose/ecdsa обоснованы, не устранены).
+Runtime tests/build и реальный источник не подтверждены: ожидаются inspected approval CHECK по unlazy
+и выбор магазина. 0/8 acceptance gates met; задача не завершена. Подробности: `gptaudits/80.md`.
+
+2026-11-15, продолжение после одобрения владельца: этап 1 develop-one принят по gates.
+Redis Lua/доверенные proxy/HTTPS scheme/case-insensitive Bearer, безопасные 422,
+обновлённые зависимости, регистрационный plan и живой путь Профи (10 свежих offers,
+10 auto matches, API/search/card/source URL, браузер) проверены в отдельных окружениях.
+Frontend 220 tests + lint/build, backend unit suite и 84 auth integration без skip;
+реальный Redis с четырьмя процессами. npm audit=0; backend оставшиеся advisories
+python-jose/ecdsa без опубликованного fix обоснованы, не объявлены устранёнными.
+Ограниченный пилот Профи, не полный обход каталога; 4 sitemap URL вернули 404.
+Два P2 независимого review исправлены. Коммитов/деплоя нет. См. `gptaudits/81.md`.
+Этап 2 по-прежнему ожидает явного подтверждения владельца.

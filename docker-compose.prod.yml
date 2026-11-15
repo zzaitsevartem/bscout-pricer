@@ -38,6 +38,7 @@ x-backend-env: &backend-env
   APP_NAME: ${APP_NAME:-BScout API}
   RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-120}
   RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-60}
+  RATE_LIMIT_TRUSTED_PROXIES: ${EDGE_SUBNET:-172.30.88.0/24}
   RATE_LIMIT_TRUST_FORWARDED_FOR: ${RATE_LIMIT_TRUST_FORWARDED_FOR:-true}
   AUTH_RATE_LIMIT_MAX_REQUESTS: ${AUTH_RATE_LIMIT_MAX_REQUESTS:-10}
   AUTH_RATE_LIMIT_WINDOW: ${AUTH_RATE_LIMIT_WINDOW:-300}
@@ -181,9 +182,8 @@ services:
     environment:
       <<: *backend-env
       UVICORN_WORKERS: ${UVICORN_WORKERS:-2}
-      # Кому доверять X-Forwarded-*. По умолчанию "*" — безопасно только потому,
-      # что порт не опубликован и в сеть edge входит лишь nginx.
-      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-*}
+      # Peer сохраняется Uvicorn; доверенные CIDR проверяет middleware.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
     depends_on:
       postgres:
         condition: service_healthy
@@ -415,6 +415,9 @@ networks:
   # через него же у воркера есть выход в интернет (парсеры ходят в магазины).
   edge:
     driver: bridge
+    ipam:
+      config:
+        - subnet: ${EDGE_SUBNET:-172.30.88.0/24}
   # internal: true — у сети нет шлюза наружу. Postgres и Redis подключены
   # только к ней, поэтому недоступны ни с хоста, ни из интернета.
   data:

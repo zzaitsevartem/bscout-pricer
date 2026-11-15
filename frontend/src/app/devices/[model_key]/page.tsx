@@ -3,7 +3,8 @@ import { Suspense } from 'react';
 import { Header } from '@/widgets/Header/ui/Header';
 import { Footer } from '@/widgets/Footer/ui/Footer';
 import { DeviceClient } from './DeviceClient';
-export default function DevicePage({ params }: { params: { model_key: string } }) {
+export default async function DevicePage({ params }: { params: Promise<{ model_key: string }> }) {
+  const { model_key: modelKey } = await params;
   return (
     <>
       <Header />
@@ -15,7 +16,7 @@ export default function DevicePage({ params }: { params: { model_key: string } }
             </p>
           }
         >
-          <DeviceClient key={params.model_key} modelKey={params.model_key} />
+          <DeviceClient key={modelKey} modelKey={modelKey} />
         </Suspense>
       </PageTransition>
       <Footer />

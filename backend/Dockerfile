@@ -29,16 +29,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ---------------------------------------------------------------------------
 FROM python:3.11-slim AS runtime-base
 
-# FORWARDED_ALLOW_IPS читает сам uvicorn. Без неё X-Forwarded-* принимаются
-# только от 127.0.0.1, и за nginx реальный IP клиента теряется (а rate limit
-# начинает считать всех пользователей за одного). В проде значение стоит сузить
-# до подсети docker-сети edge — см. .env.prod.example.
+# Peer проверяет middleware по RATE_LIMIT_TRUSTED_PROXIES;
+# Uvicorn запускается с --no-proxy-headers.
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:${PATH}" \
     APP_PORT=8000 \
     UVICORN_WORKERS=2 \
-    FORWARDED_ALLOW_IPS="*"
+    FORWARDED_ALLOW_IPS="127.0.0.1"
 
 # fonts-dejavu-core нужен для PDF-экспорта: шрифты из поставки reportlab
 # (Bitstream Vera) НЕ содержат кириллицы, и русские названия товаров
@@ -85,7 +83,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 # Теперь миграции — отдельный шаг:
 #     docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm migrate
 # либо сервис migrate поднимается сам и backend/worker ждут его завершения.
-CMD ["sh", "-c", "exec uvicorn src.main:app --host 0.0.0.0 --port ${APP_PORT} --workers ${UVICORN_WORKERS} --proxy-headers --no-server-header"]
+CMD ["sh", "-c", "exec uvicorn src.main:app --host 0.0.0.0 --port ${APP_PORT} --workers ${UVICORN_WORKERS} --no-proxy-headers --no-server-header"]
 
 FROM parser-dependencies AS parser-runtime
 COPY --from=app-runtime --chown=app:app /app /app

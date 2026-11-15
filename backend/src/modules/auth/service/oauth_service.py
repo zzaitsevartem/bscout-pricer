@@ -160,7 +160,7 @@ class HttpVKClient:
                 )
                 payload = token_response.json()
             except (httpx.HTTPError, ValueError) as exc:
-                logger.warning("vk token exchange failed: %s", exc)
+                logger.warning("vk token exchange failed: %s", type(exc).__name__)
                 raise OAuthError(VK_EXCHANGE_FAILED_CODE, VK_EXCHANGE_FAILED_MESSAGE)
 
             access_token = payload.get("access_token")
@@ -185,7 +185,7 @@ class HttpVKClient:
                     last = items[0].get("last_name") or ""
                     display_name = f"{first} {last}".strip() or None
             except (httpx.HTTPError, ValueError) as exc:
-                logger.warning("vk profile lookup failed: %s", exc)
+                logger.warning("vk profile lookup failed: %s", type(exc).__name__)
 
         return VKProfile(
             provider_user_id=str(provider_user_id),
