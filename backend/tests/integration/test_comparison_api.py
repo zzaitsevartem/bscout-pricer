@@ -863,3 +863,36 @@ async def test_suggestions_reject_expired_subscription_and_anonymous(client, db_
     for headers in [{}, _auth(token)]:
         response = await client.get("/api/products/catalog/suggestions?q=Nokia", headers=headers)
         assert response.status_code == 403
+
+
+async def test_unsubscribed_admin_can_view_comparison_but_not_other_paid_routes(client, db_session):
+    admin = User(
+        email="comparison-admin@example.com",
+        password_hash=hash_password("s3cret-pass-valid"),
+        full_name="Admin",
+        is_active=True,
+        is_admin=True,
+    )
+    user = User(
+        email="comparison-no-plan@example.com",
+        password_hash=hash_password("s3cret-pass-valid"),
+        full_name="User",
+        is_active=True,
+        is_admin=False,
+    )
+    db_session.add_all([admin, user])
+    await db_session.flush()
+    refs = await _make_dictionaries(db_session)
+    product = await _make_product(db_session, refs, refs["tier_orig"], "original", "Display")
+    store = await _make_store(db_session, "admin-fixture")
+    offer = await _make_offer(db_session, store, product, "A", "100")
+    admin_headers = _auth(create_access_token(admin.id))
+    user_headers = _auth(create_access_token(user.id))
+
+    response = await client.get(f"/api/products/catalog/{product.id}", headers=admin_headers)
+    assert response.status_code == 200, response.text
+    assert [item["id"] for item in response.json()["offers"]] == [offer.id]
+    assert (
+        await client.get(f"/api/products/catalog/{product.id}", headers=user_headers)
+    ).status_code == 403
+    assert (await client.get("/api/products/catalog", headers=admin_headers)).status_code == 403

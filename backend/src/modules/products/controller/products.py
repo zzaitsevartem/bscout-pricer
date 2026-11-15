@@ -24,8 +24,7 @@ from src.modules.search.service.search_history_service import SearchHistoryServi
 from src.modules.shared import get_current_user
 from src.modules.stores.service.store_service import StoreService
 
-router = APIRouter(
-    prefix="/api/products",
+subscription_router = APIRouter(
     tags=["products"],
     dependencies=[Depends(require_active_subscription)],
 )
@@ -54,7 +53,7 @@ def _offer_to_response(offer, store_ref, is_cheapest: bool) -> ProductResponse:
     )
 
 
-@router.get("", response_model=ProductListResponse)
+@subscription_router.get("", response_model=ProductListResponse)
 async def search_products(
     q: str = Query(default="", max_length=500),
     device_id: int | None = Query(default=None, ge=1),
@@ -128,7 +127,7 @@ async def search_products(
     return ProductListResponse(results=results, total=total, page=page, per_page=per_page)
 
 
-@router.get("/catalog", response_model=CatalogListResponse)
+@subscription_router.get("/catalog", response_model=CatalogListResponse)
 async def search_catalog(
     q: str = Query(default="", max_length=500),
     device_id: int | None = Query(default=None, ge=1),
@@ -165,7 +164,7 @@ async def search_catalog(
     return CatalogListResponse(results=results, total=total, page=page, per_page=per_page)
 
 
-@router.get("/catalog/facets", response_model=CatalogFacetsResponse)
+@subscription_router.get("/catalog/facets", response_model=CatalogFacetsResponse)
 async def catalog_facets(
     q: str = Query(default="", max_length=500),
     device_id: int | None = Query(default=None, ge=1),
@@ -194,7 +193,7 @@ async def catalog_facets(
     )
 
 
-@router.get("/catalog/devices", response_model=list[DeviceSuggestion])
+@subscription_router.get("/catalog/devices", response_model=list[DeviceSuggestion])
 async def catalog_devices(
     q: str = Query(min_length=2, max_length=500),
     limit: int = Query(default=6, ge=1, le=8),
@@ -204,7 +203,7 @@ async def catalog_devices(
     return await ComparisonService.device_suggestions(db, q, limit)
 
 
-@router.get("/catalog/suggestions", response_model=list[CatalogSuggestion])
+@subscription_router.get("/catalog/suggestions", response_model=list[CatalogSuggestion])
 async def catalog_suggestions(
     q: str = Query(min_length=2, max_length=500),
     device_id: int | None = Query(default=None, ge=1),
@@ -237,10 +236,15 @@ async def catalog_suggestions(
     )
 
 
-@router.get("/catalog/{product_id}", response_model=ComparisonDetailResponse)
+comparison_router = APIRouter(tags=["products"])
+
+
+@comparison_router.get("/catalog/{product_id}", response_model=ComparisonDetailResponse)
 async def get_catalog_product(
     product_id: int, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)
 ):
+    if not user.is_admin:
+        await require_active_subscription(db, user)
     comparison = await ComparisonService.get_comparison(db, product_id)
     if comparison is None:
         raise HTTPException(
@@ -249,7 +253,9 @@ async def get_catalog_product(
     return ComparisonDetailResponse(**comparison)
 
 
-@router.get("/catalog/{product_id}/price-history", response_model=ProductPriceHistoryResponse)
+@subscription_router.get(
+    "/catalog/{product_id}/price-history", response_model=ProductPriceHistoryResponse
+)
 async def get_catalog_price_history(
     product_id: int,
     days: int = Query(default=90, ge=1, le=730),
@@ -264,7 +270,7 @@ async def get_catalog_price_history(
     return ProductPriceHistoryResponse(product_id=product_id, days=days, points=points)
 
 
-@router.get("/{offer_id}", response_model=ProductResponse)
+@subscription_router.get("/{offer_id}", response_model=ProductResponse)
 async def get_product(
     offer_id: int, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)
 ):
@@ -280,7 +286,7 @@ async def get_product(
     return _offer_to_response(offer, store_ref, False)
 
 
-@router.get("/{offer_id}/price-history", response_model=list[PriceHistoryResponse])
+@subscription_router.get("/{offer_id}/price-history", response_model=list[PriceHistoryResponse])
 async def get_price_history(
     offer_id: int, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)
 ):
@@ -288,3 +294,8 @@ async def get_price_history(
     if offer is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     return await ProductService.get_price_history(db, offer_id)
+
+
+router = APIRouter()
+router.include_router(subscription_router, prefix="/api/products")
+router.include_router(comparison_router, prefix="/api/products")

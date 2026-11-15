@@ -183,7 +183,8 @@ class ParserService:
         existing.url = result.url
         if result.raw:
             existing.raw = result.raw
-        existing.is_active = True
+        if existing.match_status != "rejected":
+            existing.is_active = True
         existing.last_seen_at = now
         if price_changed:
             existing.price_retail = result.price_retail

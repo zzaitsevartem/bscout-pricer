@@ -69,6 +69,7 @@ export {
   useRejectMatchCandidate,
   useLinkOffer,
   useUnlinkOffer,
+  useDeleteOffer,
   useBroadcasts,
   useBroadcastRecipients,
   useCreateBroadcast,

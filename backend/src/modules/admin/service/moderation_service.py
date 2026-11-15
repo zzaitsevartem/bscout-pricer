@@ -315,6 +315,20 @@ class ModerationService:
         )
 
     @classmethod
+    async def delete_offer(
+        cls, db: AsyncSession, offer_id: int, admin_id: int
+    ) -> OfferLinkResponse:
+        await db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": CATALOG_WRITE_LOCK_ID})
+        response = await cls.unlink_offer(db, offer_id, admin_id)
+        offer = await cls._load_offer(db, offer_id)
+        offer.is_active = False
+        await db.flush()
+        from src.modules.products.service.matching_service import MatchingService
+
+        await MatchingService.recalc_cluster_aggregates(db)
+        return response
+
+    @classmethod
     async def unlink_offer(
         cls, db: AsyncSession, offer_id: int, admin_id: int
     ) -> OfferLinkResponse:

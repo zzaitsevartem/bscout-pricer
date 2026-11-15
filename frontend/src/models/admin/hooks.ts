@@ -229,3 +229,17 @@ export function usePreviewBroadcast() {
       adminApi.previewBroadcast(data).then((r) => r.data),
   });
 }
+
+export function useDeleteOffer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (offerId: number) => adminApi.deleteOffer(offerId).then((r) => r.data),
+    onSuccess: async () => {
+      await Promise.all(
+        ['catalog', 'products', 'admin', 'tracking'].map((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] }),
+        ),
+      );
+    },
+  });
+}

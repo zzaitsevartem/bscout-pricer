@@ -52,6 +52,8 @@ export const adminApi = {
   linkOffer: (offerId: number, data: OfferLinkRequest) =>
     api.post<OfferLinkResponse>(`/admin/offers/${offerId}/link`, data),
 
+  deleteOffer: (offerId: number) => api.delete<OfferLinkResponse>(`/admin/offers/${offerId}`),
+
   unlinkOffer: (offerId: number) => api.post<OfferLinkResponse>(`/admin/offers/${offerId}/unlink`),
 
   getBroadcasts: (page = 1, perPage = 10) =>

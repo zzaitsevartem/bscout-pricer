@@ -209,3 +209,15 @@ async def unlink_offer(
         return await ModerationService.unlink_offer(db, offer_id, admin.id)
     except ModerationError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
+@router.delete("/offers/{offer_id}", response_model=OfferLinkResponse)
+async def delete_offer(
+    offer_id: int,
+    db: AsyncSession = Depends(get_db),
+    admin=Depends(get_current_admin),
+):
+    try:
+        return await ModerationService.delete_offer(db, offer_id, admin.id)
+    except ModerationError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc

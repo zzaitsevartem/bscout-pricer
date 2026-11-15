@@ -14,6 +14,9 @@ _INCOMPLETE_CORE_FACTOR = 0.5
 _FUZZY_FACTOR = 0.9
 _FUZZY_MIN_LEN = 6
 _FUZZY_MAX_DISTANCE = 1
+_CONSUMABLE_HEADS = frozenset(
+    {"скотч", "проклейка", "клей", "уплотнитель", "tape", "adhesive", "gasket"}
+)
 _MODEL_SUFFIXES = frozenset(
     {"v", "x", "s", "hd", "pro", "max", "plus", "mini", "lite", "ultra", "neo", "play"}
 )
@@ -253,6 +256,15 @@ def extract(title: str, dicts: Dictionaries) -> ExtractedAttrs:
         part_type = _fuzzy_match(index.part_types, tokens)
         if part_type is not None:
             fuzzy_fields.append("part_type")
+
+    if part_type is not None:
+        consumable = any(token in _CONSUMABLE_HEADS for token in tokens[: part_type.start])
+        camera_glass = (
+            dicts.part_type_code.get(part_type.entity_id) == "camera"
+            and "стекло" in tokens[: part_type.start + part_type.size]
+        )
+        if consumable or camera_glass:
+            part_type = None
 
     if device is not None and device.contiguous:
         end = device.start + device.size

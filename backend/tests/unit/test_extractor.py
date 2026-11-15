@@ -365,3 +365,33 @@ def test_extraction_coverage_on_demo_fixture(dicts: Dictionaries) -> None:
 def test_every_fixture_title_resolves_to_a_device(dicts: Dictionaries) -> None:
     missing = [title for title in _fixture_titles() if extract(title, dicts).device_id is None]
     assert missing == []
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Клей для дисплея iPhone 13",
+        "Скотч для аккумулятора iPhone 13",
+        "Проклейка задней крышки iPhone 13",
+        "Стекло камеры iPhone 13",
+    ],
+)
+def test_accessories_are_not_matched_as_main_parts(title, dicts):
+    result = extract(title, dicts)
+    assert dicts.part_type_code.get(result.part_type_id) not in {
+        "display",
+        "battery",
+        "back_cover",
+        "camera",
+    }
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Дисплей iPhone 13 в сборе со скотчем",
+        "Дисплей iPhone 13 Переклей",
+    ],
+)
+def test_display_assemblies_remain_displays(title, dicts):
+    assert _codes(title, dicts)[1] == "display"

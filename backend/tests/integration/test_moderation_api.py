@@ -781,3 +781,54 @@ async def test_regeneration_preserves_human_rejection(client, db_session, status
     await MatchingService._ensure_candidate(db_session, offer, product, 0.75, attrs)
     await db_session.refresh(candidate)
     assert candidate.status == expected
+
+
+async def test_delete_offer_is_admin_only_and_parser_does_not_restore_it(client, db_session):
+    from src.modules.parser.service.base import ParseResult, ParserManager
+    from src.modules.parser.service.parser_service import ParserService
+
+    store = await _make_store(db_session)
+    brand = Brand(name="Delete fixture", slug="delete-fixture")
+    db_session.add(brand)
+    await db_session.flush()
+    device = Device(brand_id=brand.id, name="Fixture", model_key="delete-fixture")
+    part = PartType(code="display", name_ru="Дисплей")
+    db_session.add_all([device, part])
+    await db_session.flush()
+    cluster = Cluster(
+        device_id=device.id, part_type_id=part.id, offers_count=2, min_price_retail=Decimal("4500")
+    )
+    db_session.add(cluster)
+    await db_session.flush()
+    product = await _make_product(db_session, "delete-product", "Товар")
+    product.cluster_id = cluster.id
+    offer = await _make_offer(db_session, store, match_status="auto", product_id=product.id)
+    other = await _make_offer(
+        db_session, store, sku="other", price="6000", match_status="manual", product_id=product.id
+    )
+    user = await _make_user(db_session, "delete-user@example.com", is_admin=False)
+    url = f"/api/admin/offers/{offer.id}"
+    assert (await client.delete(url)).status_code in (401, 403)
+    assert (
+        await client.delete(url, headers=_auth(create_access_token(user.id)))
+    ).status_code == 403
+    response = await client.delete(url, headers=await _admin_headers(db_session))
+    assert response.status_code == 200
+    await db_session.refresh(offer)
+    await db_session.refresh(other)
+    await db_session.refresh(cluster)
+    assert (cluster.offers_count, cluster.min_price_retail) == (1, Decimal("6000"))
+    assert (offer.is_active, offer.match_status, offer.product_id) == (False, "rejected", None)
+    assert (other.is_active, other.match_status, other.product_id) == (True, "manual", product.id)
+    await ParserService(ParserManager()).upsert_offer(
+        db_session,
+        store.id,
+        ParseResult(
+            source_sku=offer.source_sku,
+            title=offer.title,
+            price_retail=Decimal("123"),
+            url=offer.url,
+        ),
+    )
+    await db_session.refresh(offer)
+    assert (offer.is_active, offer.match_status, offer.product_id) == (False, "rejected", None)
