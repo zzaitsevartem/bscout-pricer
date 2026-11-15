@@ -9,7 +9,7 @@ export function TrackingPreviewCard({
 }) {
   return (
     <div className="flex min-h-[340px] flex-col gap-4 rounded-[24px] border border-border-light bg-ivory-warm p-6">
-      <div className="flex items-center gap-3 bg-slate p-3 text-ivory">{header}</div>
+      <div className="flex items-center gap-3 bg-brand-green p-3 text-ivory">{header}</div>
       {children}
     </div>
   );
