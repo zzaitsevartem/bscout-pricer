@@ -20,7 +20,7 @@ from src.database import Base
 
 STOCK_STATUSES = ("in_stock", "low", "out", "preorder", "unknown")
 OFFER_MATCH_STATUSES = ("unmatched", "auto", "manual", "rejected", "review")
-CANDIDATE_STATUSES = ("pending", "approved", "rejected")
+CANDIDATE_STATUSES = ("pending", "approved", "rejected", "superseded")
 
 
 class Cluster(Base):
@@ -155,7 +155,7 @@ class MatchCandidate(Base):
     __table_args__ = (
         UniqueConstraint("offer_id", "product_id", name="uq_match_candidates_offer_id"),
         CheckConstraint(
-            "status IN ('pending', 'approved', 'rejected')",
+            "status IN ('pending', 'approved', 'rejected', 'superseded')",
             name="status_allowed",
         ),
     )

@@ -33,6 +33,7 @@ const STATUS_FILTERS: { value: MatchCandidateStatusFilter; label: string }[] = [
   { value: 'pending', label: 'Ожидают' },
   { value: 'approved', label: 'Подтверждены' },
   { value: 'rejected', label: 'Отклонены' },
+  { value: 'superseded', label: 'Устарели' },
   { value: 'all', label: 'Все' },
 ];
 
@@ -58,6 +59,9 @@ function scoreBadge(score: string) {
 }
 
 function statusBadge(status: string) {
+  if (status === 'superseded') {
+    return { label: 'Устарела', className: BADGE_WARNING };
+  }
   if (status === 'approved') {
     return { label: 'Подтверждена', className: BADGE_SUCCESS };
   }
@@ -115,6 +119,11 @@ function CandidateRow({
         <div className="text-[13px] text-body-subtle font-mono">
           {candidate.product?.canonical_key ?? '—'}
         </div>
+        {candidate.validation_warning && (
+          <p className="mt-2 text-[13px] text-status-warning-text">
+            {candidate.validation_warning}
+          </p>
+        )}
       </td>
       <td className={TABLE_TD}>
         <span className={cn(BADGE_BASE, score.className)}>{score.label}</span>
@@ -237,6 +246,12 @@ export function ModerationSection() {
         </div>
       </div>
 
+      {mutationError !== null && mutationError !== undefined && (
+        <p role="alert" className="text-[14px] text-clay mb-4">
+          {apiErrorMessage(mutationError, 'Не удалось применить решение по связке')}
+        </p>
+      )}
+
       {status === 'pending' && rows.length > 0 && (
         <div className="mb-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -350,12 +365,6 @@ export function ModerationSection() {
             </div>
           )}
         </>
-      )}
-
-      {mutationError !== null && mutationError !== undefined && (
-        <p className="text-[14px] text-clay mb-3">
-          {apiErrorMessage(mutationError, 'Не удалось применить решение по связке')}
-        </p>
       )}
     </section>
   );

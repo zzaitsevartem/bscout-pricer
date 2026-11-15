@@ -81,6 +81,21 @@ def dicts() -> Dictionaries:
     return _build_dictionaries()
 
 
+@pytest.mark.parametrize("alias,token", [("orionax", "oriona"), ("vegamax", "vegama")])
+def test_device_fuzzy_does_not_add_or_remove_model_suffix(dicts, alias, token):
+    custom = replace(
+        dicts,
+        device_by_alias={alias: 9001},
+        device_model_key={9001: "fixture-device"},
+        device_brand={9001: 1},
+    )
+    assert extract(f"Дисплей {token}", custom).device_id is None
+    assert extract(f"Дисплей {alias}x", custom).device_id is None
+    assert extract(f"Дисплей {alias}", custom).device_id == 9001
+    typo = alias[:3] + "q" + alias[4:]
+    assert extract(f"Дисплей {typo}", custom).device_id == 9001
+
+
 def test_play_without_dictionary_entry_does_not_fall_back_to_hot30(dicts):
     play_id = next(
         key for key, value in dicts.device_model_key.items() if value == "infinix-hot-30-play"

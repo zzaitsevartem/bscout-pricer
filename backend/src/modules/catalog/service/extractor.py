@@ -183,7 +183,9 @@ def _best_match(
     return best
 
 
-def _fuzzy_match(entries: tuple[_Entry, ...], tokens: list[str]) -> _Match | None:
+def _fuzzy_match(
+    entries: tuple[_Entry, ...], tokens: list[str], reject_prefix: bool = False
+) -> _Match | None:
     best: _Match | None = None
     best_key: tuple[int, int, int] | None = None
     for entry in entries:
@@ -191,6 +193,10 @@ def _fuzzy_match(entries: tuple[_Entry, ...], tokens: list[str]) -> _Match | Non
             continue
         for position, token in enumerate(tokens):
             if len(token) < _FUZZY_MIN_LEN:
+                continue
+            if reject_prefix and (
+                token.startswith(entry.surface) or entry.surface.startswith(token)
+            ):
                 continue
             distance = edit_distance(token, entry.surface, _FUZZY_MAX_DISTANCE)
             if distance > _FUZZY_MAX_DISTANCE or distance == 0:
@@ -240,7 +246,7 @@ def extract(title: str, dicts: Dictionaries) -> ExtractedAttrs:
 
     fuzzy_fields: list[str] = []
     if device is None:
-        device = _fuzzy_match(device_entries, tokens)
+        device = _fuzzy_match(device_entries, tokens, reject_prefix=True)
         if device is not None:
             fuzzy_fields.append("device")
     if part_type is None:

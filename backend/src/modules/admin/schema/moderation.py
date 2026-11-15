@@ -59,6 +59,7 @@ class MatchCandidateResponse(BaseModel):
     product_id: int
     score: Decimal
     features: dict | None = None
+    validation_warning: str | None = None
     status: str
     decided_by: int | None = None
     decided_at: datetime | None = None

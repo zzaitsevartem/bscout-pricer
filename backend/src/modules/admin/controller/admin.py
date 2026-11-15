@@ -119,7 +119,7 @@ async def import_offers(
 @router.get("/match-candidates", response_model=MatchCandidateListResponse)
 async def list_match_candidates(
     status_filter: str = Query(
-        default="pending", alias="status", pattern="^(pending|approved|rejected|all)$"
+        default="pending", alias="status", pattern="^(pending|approved|rejected|superseded|all)$"
     ),
     offer_id: int | None = Query(default=None, ge=1),
     product_id: int | None = Query(default=None, ge=1),

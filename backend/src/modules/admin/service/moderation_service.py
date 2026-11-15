@@ -13,8 +13,10 @@ from src.modules.admin.schema.moderation import (
     OfferLinkResponse,
     OfferStateResponse,
 )
+from src.modules.catalog.service.dictionaries import load_dictionaries
+from src.modules.catalog.service.extractor import extract
 from src.modules.parser.service.parser_service import CATALOG_WRITE_LOCK_ID
-from src.modules.products.model.product import MatchCandidate, Product, StoreOffer
+from src.modules.products.model.product import Cluster, MatchCandidate, Product, StoreOffer
 from src.modules.products.schema.product import StoreRef
 from src.modules.stores.model.store import Store
 
@@ -96,10 +98,34 @@ class ModerationService:
         )
 
         rows = (await db.execute(stmt)).all()
-        results = [
-            _candidate_response(candidate, offer, store, product)
-            for candidate, offer, store, product in rows
-        ]
+        results = []
+        pending = [row for row in rows if row.MatchCandidate.status == "pending"]
+        dictionaries = await load_dictionaries(db) if pending else None
+        cluster_ids = {row.Product.cluster_id for row in pending} - {None}
+        clusters = (
+            {
+                cluster.id: cluster
+                for cluster in (
+                    await db.execute(select(Cluster).where(Cluster.id.in_(cluster_ids)))
+                ).scalars()
+            }
+            if cluster_ids
+            else {}
+        )
+        for candidate, offer, store, product in rows:
+            response = _candidate_response(candidate, offer, store, product)
+            cluster = clusters.get(product.cluster_id)
+            if candidate.status == "pending" and cluster is not None:
+                attrs = extract(offer.title, dictionaries)
+                if (
+                    attrs.device_id != cluster.device_id
+                    or attrs.part_type_id != cluster.part_type_id
+                ):
+                    response.validation_warning = (
+                        "Текущее распознавание не подтверждает модель или тип детали этой связи. "
+                        "Сверьте название поставщика с карточкой перед подтверждением."
+                    )
+            results.append(response)
         return results, total
 
     @staticmethod

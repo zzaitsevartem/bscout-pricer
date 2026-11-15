@@ -73,6 +73,30 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('ModerationSection', () => {
+  it('shows superseded candidates as historical rather than awaiting approval', async () => {
+    server.use(
+      http.get('*/api/admin/match-candidates', () =>
+        HttpResponse.json(listResponse([{ ...candidate, status: 'superseded' }])),
+      ),
+    );
+    renderSection();
+    expect(await screen.findByText('Устарела')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Подтвердить' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Устарели' })).toBeInTheDocument();
+  });
+
+  it('shows a recognition warning while keeping manual approval available', async () => {
+    const warning = 'Текущее распознавание не подтверждает модель или тип детали этой связи.';
+    server.use(
+      http.get('*/api/admin/match-candidates', () =>
+        HttpResponse.json(listResponse([{ ...candidate, validation_warning: warning }])),
+      ),
+    );
+    renderSection();
+    expect(await screen.findByText(warning)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Подтвердить' })).toBeEnabled();
+  });
+
   it.each([
     ['approve', 'Одобрить все', { approved: 53, rejected: 0 }],
     ['reject', 'Отклонить все', { approved: 0, rejected: 53 }],
@@ -272,7 +296,7 @@ describe('ModerationSection', () => {
     expect(screen.queryByRole('button', { name: 'Связать' })).not.toBeInTheDocument();
   });
 
-  it('surfaces the backend detail when a decision fails', async () => {
+  it.each([409, 429])('surfaces the backend detail near moderation on HTTP %i', async (status) => {
     const user = userEvent.setup();
 
     server.use(
@@ -280,7 +304,7 @@ describe('ModerationSection', () => {
         HttpResponse.json(listResponse([candidate])),
       ),
       http.post('*/api/admin/match-candidates/:id/approve', () =>
-        HttpResponse.json({ detail: 'Связка уже занята' }, { status: 409 }),
+        HttpResponse.json({ detail: 'Решение не сохранено' }, { status }),
       ),
     );
 
@@ -288,7 +312,8 @@ describe('ModerationSection', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Подтвердить' }));
 
-    expect(await screen.findByText('Связка уже занята')).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Решение не сохранено');
+    expect(screen.getByRole('button', { name: 'Подтвердить' })).toBeInTheDocument();
   });
 
   it('switches the status filter and refetches', async () => {

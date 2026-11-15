@@ -89,6 +89,7 @@ export const matchCandidateResponseSchema = z.object({
   product_id: z.number(),
   score: z.string(),
   features: z.record(z.string(), z.unknown()).nullable(),
+  validation_warning: z.string().nullable().optional(),
   status: z.string(),
   decided_by: z.number().nullable(),
   decided_at: z.string().nullable(),
@@ -108,6 +109,7 @@ export const matchCandidateStatusFilterSchema = z.enum([
   'pending',
   'approved',
   'rejected',
+  'superseded',
   'all',
 ]);
 

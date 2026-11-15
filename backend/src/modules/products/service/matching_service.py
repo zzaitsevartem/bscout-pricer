@@ -204,6 +204,15 @@ class MatchingService:
                 stats.skipped += 1
             return MatchOutcome(offer.id, offer.product_id, offer.match_status, 0.0)
 
+        if offer.match_status == "review" and offer.product_id is not None:
+            current = await db.get(Product, offer.product_id)
+            if current is not None and current.canonical_key == f"review-offer|{offer.id}":
+                current.canonical_name = offer.title
+                await db.flush()
+                if stats is not None:
+                    stats.review += 1
+                return MatchOutcome(offer.id, offer.product_id, "review", 0.0)
+
         attrs = extract(offer.title, dicts)
         offer.product_id = None
         offer.match_status = "unmatched"
@@ -217,6 +226,21 @@ class MatchingService:
         if confidence >= CANDIDATE_THRESHOLD:
             product = await MatchingService.canonicalize(db, attrs, dicts, stats)
 
+        pending = (
+            await db.execute(
+                select(MatchCandidate).where(
+                    MatchCandidate.offer_id == offer.id, MatchCandidate.status == "pending"
+                )
+            )
+        ).scalars()
+        for candidate in pending:
+            if (
+                product is None
+                or confidence >= AUTO_THRESHOLD
+                or candidate.product_id != product.id
+            ):
+                candidate.status = "superseded"
+
         if product is None:
             if attrs.part_type_id is not None or attrs.device_id is not None:
                 offer.match_status = "review"
@@ -227,6 +251,7 @@ class MatchingService:
                 return MatchOutcome(offer.id, None, "review", confidence)
             if stats is not None:
                 stats.unmatched += 1
+            await db.flush()
             return MatchOutcome(offer.id, None, "unmatched", confidence)
 
         if confidence >= AUTO_THRESHOLD:
@@ -260,6 +285,8 @@ class MatchingService:
             )
         ).scalar_one_or_none()
         if existing is not None:
+            if existing.status == "superseded":
+                existing.status = "pending"
             if existing.status == "pending":
                 existing.score = confidence
                 existing.features = dict(attrs.matched)

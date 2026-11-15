@@ -287,6 +287,10 @@ class ComparisonService:
                 None if dimension == "part_type" else part_type_id,
                 None if dimension == "quality" else quality_tier_id,
                 fuzzy,
+                store_slug,
+                min_price,
+                max_price,
+                in_stock,
             ).subquery()
 
         products = matching_products("device")
@@ -340,8 +344,32 @@ class ComparisonService:
         part_type_id: int | None,
         quality_tier_id: int | None,
         fuzzy: bool = False,
+        store_slug: str | None = None,
+        min_price: Decimal | None = None,
+        max_price: Decimal | None = None,
+        in_stock: bool | None = None,
     ):
-        stmt = stmt.where(search_predicate(Product.canonical_name, query, fuzzy))
+        available_review_offer = (
+            select(StoreOffer.id)
+            .join(Store, Store.id == StoreOffer.store_id)
+            .where(StoreOffer.product_id == Product.id)
+            .where(*_offer_conditions())
+            .exists()
+        )
+        stmt = stmt.where(
+            or_(~Product.canonical_key.like("review-offer|%"), available_review_offer)
+        )
+        matching_offer = (
+            select(StoreOffer.id)
+            .join(Store, Store.id == StoreOffer.store_id)
+            .where(StoreOffer.product_id == Product.id)
+            .where(*_offer_conditions(store_slug, min_price, max_price, in_stock))
+            .where(search_predicate(StoreOffer.normalized_title, query, fuzzy))
+            .exists()
+        )
+        stmt = stmt.where(
+            or_(search_predicate(Product.canonical_name, query, fuzzy), matching_offer)
+        )
         if device_id is not None:
             stmt = stmt.where(Cluster.device_id == device_id)
         if part_type_id is not None:
@@ -380,7 +408,16 @@ class ComparisonService:
         if filtered_offers:
             count_stmt = count_stmt.join(agg, agg.c.product_id == Product.id)
         count_stmt = ComparisonService._apply_filters(
-            count_stmt, query, device_id, part_type_id, quality_tier_id, fuzzy
+            count_stmt,
+            query,
+            device_id,
+            part_type_id,
+            quality_tier_id,
+            fuzzy,
+            store_slug,
+            min_price,
+            max_price,
+            in_stock,
         )
         total = (await db.execute(count_stmt)).scalar() or 0
 
@@ -420,7 +457,16 @@ class ComparisonService:
         if filtered_offers:
             stmt = stmt.where(agg.c.product_id.is_not(None))
         stmt = ComparisonService._apply_filters(
-            stmt, query, device_id, part_type_id, quality_tier_id, fuzzy
+            stmt,
+            query,
+            device_id,
+            part_type_id,
+            quality_tier_id,
+            fuzzy,
+            store_slug,
+            min_price,
+            max_price,
+            in_stock,
         )
 
         if sort_by == "min_price_desc":
@@ -468,7 +514,16 @@ class ComparisonService:
             .where(offers)
         )
         stmt = ComparisonService._apply_filters(
-            stmt, query, device_id, part_type_id, quality_tier_id, fuzzy
+            stmt,
+            query,
+            device_id,
+            part_type_id,
+            quality_tier_id,
+            fuzzy,
+            store_slug,
+            min_price,
+            max_price,
+            in_stock,
         )
         priority = case(
             (Product.canonical_name.ilike(f"{query.strip()}%"), 0),

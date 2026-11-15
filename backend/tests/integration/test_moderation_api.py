@@ -5,8 +5,12 @@ from sqlalchemy import select
 
 from src.modules.auth.model.user import User
 from src.modules.auth.service.auth import create_access_token, hash_password
-from src.modules.products.model.product import MatchCandidate, Product, StoreOffer
+from src.modules.catalog.model.catalog import Brand, Device, PartType
+from src.modules.parser.service.utils import normalize_name
+from src.modules.products.model.product import Cluster, MatchCandidate, Product, StoreOffer
 from src.modules.stores.model.store import Store
+from tests.integration.test_comparison_api import _auth as _search_auth
+from tests.integration.test_comparison_api import _make_user as _make_search_user
 
 pytestmark = pytest.mark.integration
 
@@ -329,6 +333,174 @@ async def test_approve_links_offer_and_closes_competitors(client, db_session):
     assert other_offer.match_status == "unmatched"
 
 
+async def test_admin_can_approve_fuzzy_candidate_when_device_is_not_recognized(client, db_session):
+    store = await _make_store(db_session)
+    headers = await _admin_headers(db_session)
+    brand = Brand(name="Fixture", slug="fixture")
+    db_session.add(brand)
+    await db_session.flush()
+    device = Device(brand_id=brand.id, name="Orion A10", model_key="orion-a10")
+    part = PartType(code="display", name_ru="Дисплей")
+    db_session.add_all([device, part])
+    await db_session.flush()
+    cluster = Cluster(device_id=device.id, part_type_id=part.id, offers_count=0)
+    db_session.add(cluster)
+    await db_session.flush()
+    product = await _make_product(db_session, "orion-display", "Дисплей Orion A10")
+    product.cluster_id = cluster.id
+    offer = await _make_offer(
+        db_session, store, title="Дисплей для Vega X987", match_status="review"
+    )
+    candidate = await _make_candidate(db_session, offer, product, features={"fuzzy": "device"})
+
+    queue = await client.get(QUEUE_URL, headers=headers)
+    assert queue.status_code == 200, queue.text
+    warning = queue.json()["results"][0]["validation_warning"]
+    assert warning and "не подтверждает" in warning
+    await db_session.refresh(candidate)
+    assert candidate.status == "pending" and candidate.decided_by is None
+    assert candidate.decided_at is None
+
+    response = await client.post(f"{QUEUE_URL}/{candidate.id}/approve", headers=headers)
+    assert response.status_code == 200, response.text
+    await db_session.refresh(offer)
+    await db_session.refresh(candidate)
+    assert offer.product_id == product.id and offer.match_status == "manual"
+    assert candidate.status == "approved"
+
+
+@pytest.mark.parametrize(
+    ("title", "canonical", "device_name", "part_code", "part_name"),
+    [
+        (
+            "Дисплей для Orion A10 Q1234 (черный)",
+            "Дисплей Orion A10",
+            "Orion A10",
+            "display",
+            "Дисплей",
+        ),
+        (
+            "Аккумулятор для Vega B20 R5678 (белый)",
+            "Аккумулятор Vega B20",
+            "Vega B20",
+            "battery",
+            "Аккумулятор",
+        ),
+    ],
+)
+async def test_approved_offer_is_found_in_catalog_by_supplier_title(
+    client, db_session, title, canonical, device_name, part_code, part_name
+):
+    store = await _make_store(db_session)
+    headers = await _admin_headers(db_session)
+    _, token = await _make_search_user(db_session)
+    brand = Brand(name="Fixture brand", slug="fixture-brand")
+    db_session.add(brand)
+    await db_session.flush()
+    device = Device(brand_id=brand.id, name=device_name, model_key="fixture-device")
+    part = PartType(code=part_code, name_ru=part_name)
+    db_session.add_all([device, part])
+    await db_session.flush()
+    cluster = Cluster(device_id=device.id, part_type_id=part.id, offers_count=0)
+    db_session.add(cluster)
+    await db_session.flush()
+    product = await _make_product(db_session, "test-key", canonical)
+    product.cluster_id = cluster.id
+    device_id, part_id = device.id, part.id
+    offer = await _make_offer(db_session, store, title=title, match_status="review")
+    offer.normalized_title = normalize_name(title)
+    assert offer.normalized_title != title.lower()
+    candidate = await _make_candidate(db_session, offer, product)
+    product_id, offer_id, candidate_id = product.id, offer.id, candidate.id
+
+    pending = await client.get(QUEUE_URL, headers=headers)
+    assert pending.status_code == 200, pending.text
+    assert pending.json()["results"][0]["validation_warning"] is None
+
+    response = await client.post(f"{QUEUE_URL}/{candidate_id}/approve", headers=headers)
+    assert response.status_code == 200, response.text
+    db_session.expire_all()
+    assert (await db_session.get(MatchCandidate, candidate_id)).status == "approved"
+    assert (await db_session.get(StoreOffer, offer_id)).product_id == product_id
+    queue = await client.get(QUEUE_URL, headers=headers)
+    assert queue.status_code == 200 and queue.json()["total"] == 0
+    for query in (title, canonical):
+        result = await client.get(
+            "/api/products/catalog", params={"q": query}, headers=_search_auth(token)
+        )
+        assert result.status_code == 200, result.text
+        assert [item["id"] for item in result.json()["results"]] == [product_id]
+        assert result.json()["results"][0]["source"]["offer_id"] == offer_id
+        assert result.json()["results"][0]["source"]["url"] == offer.url
+        facets = await client.get(
+            "/api/products/catalog/facets", params={"q": query}, headers=_search_auth(token)
+        )
+        assert facets.status_code == 200, facets.text
+        assert facets.json()["total"] == 1
+        assert [item["id"] for item in facets.json()["devices"]] == [device_id]
+        assert [item["id"] for item in facets.json()["part_types"]] == [part_id]
+
+
+async def test_catalog_title_search_uses_only_eligible_linked_offers(client, db_session):
+    store_a = await _make_store(db_session, slug="store-a", name="A")
+    store_b = await _make_store(db_session, slug="store-b", name="B")
+    _, token = await _make_search_user(db_session)
+    product = await _make_product(db_session, "product-one", "Дисплей Orion A10")
+    other_product = await _make_product(db_session, "product-two", "Аккумулятор Vega B20")
+    await _make_offer(
+        db_session, store_a, sku="a", title="Дисплей Orion A10", product_id=product.id
+    )
+    matching = await _make_offer(
+        db_session,
+        store_b,
+        sku="b",
+        title="Дисплей для Orion A10 Q1234 (черный)",
+        product_id=product.id,
+    )
+    matching.stock_status = "out"
+    inactive = await _make_offer(
+        db_session,
+        store_a,
+        sku="c",
+        title="Дисплей для Orion A10 Q9999",
+        product_id=product.id,
+    )
+    inactive.is_active = False
+    await _make_offer(db_session, store_a, sku="d", title="Дисплей для Orion A10 Q8888")
+    await _make_offer(
+        db_session,
+        store_a,
+        sku="e",
+        title="Аккумулятор Vega B20 Q7777",
+        product_id=other_product.id,
+    )
+    await db_session.flush()
+
+    for params in (
+        {"q": "Q1234", "store": "store-a"},
+        {"q": "Q1234", "in_stock": "true"},
+        {"q": "Q1234", "max_price": 1000},
+        {"q": "Q9999"},
+        {"q": "Q8888"},
+    ):
+        response = await client.get(
+            "/api/products/catalog", params=params, headers=_search_auth(token)
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["results"] == []
+        facets = await client.get(
+            "/api/products/catalog/facets", params=params, headers=_search_auth(token)
+        )
+        assert facets.status_code == 200, facets.text
+        assert facets.json()["total"] == 0
+    for query, expected_id in (("Q1234", product.id), ("Q7777", other_product.id)):
+        response = await client.get(
+            "/api/products/catalog", params={"q": query}, headers=_search_auth(token)
+        )
+        assert response.status_code == 200, response.text
+        assert [item["id"] for item in response.json()["results"]] == [expected_id]
+
+
 async def test_reject_marks_candidate_and_leaves_offer_untouched(client, db_session):
     store = await _make_store(db_session)
     admin = await _admin(db_session)
@@ -543,3 +715,69 @@ async def test_review_offers_endpoint_lists_only_review_status(client, db_sessio
 async def test_review_offers_endpoint_requires_admin(client, db_session):
     resp = await client.get("/api/admin/review-offers")
     assert resp.status_code == 403
+
+
+async def test_review_offer_remains_searchable_after_rematch(client, db_session):
+    from src.modules.catalog.service.dictionaries import load_dictionaries
+    from src.modules.products.service.matching_service import MatchingService
+
+    store = await _make_store(db_session)
+    _, token = await _make_search_user(db_session)
+    title = "Аккумулятор Vega K40 F8321 (чёрный)"
+    offer = await _make_offer(db_session, store, title=title, match_status="review")
+    product = await _make_product(db_session, f"review-offer|{offer.id}", title)
+    offer.product_id = product.id
+    await db_session.flush()
+    outcome = await MatchingService.match_offer(
+        db_session, offer, await load_dictionaries(db_session)
+    )
+    assert outcome.status == "review" and offer.product_id == product.id
+    response = await client.get(
+        "/api/products/catalog", params={"q": title}, headers=_search_auth(token)
+    )
+    assert response.status_code == 200, response.text
+    result = response.json()["results"][0]
+    assert result["id"] == product.id and result["source"]["offer_id"] == offer.id
+    assert result["source"]["url"] == offer.url
+    detail = await client.get(f"/api/products/catalog/{product.id}", headers=_search_auth(token))
+    assert detail.status_code == 200, detail.text
+    assert [(row["id"], row["url"]) for row in detail.json()["offers"]] == [(offer.id, offer.url)]
+    offer.product_id = None
+    await db_session.flush()
+    response = await client.get(
+        "/api/products/catalog", params={"q": title}, headers=_search_auth(token)
+    )
+    assert response.json()["results"] == []
+
+
+async def test_rematching_supersedes_obsolete_pending_without_admin_decision(db_session):
+    from src.modules.catalog.service.dictionaries import load_dictionaries
+    from src.modules.products.service.matching_service import MatchingService
+
+    store = await _make_store(db_session)
+    offer = await _make_offer(db_session, store, title="Деталь Vega F8321")
+    product = await _make_product(db_session, "obsolete-model", "Другая модель")
+    candidate = await _make_candidate(db_session, offer, product)
+    await MatchingService.match_offer(db_session, offer, await load_dictionaries(db_session))
+    await db_session.refresh(candidate)
+    assert candidate.status == "superseded"
+    assert candidate.decided_by is None and candidate.decided_at is None
+    assert candidate.product_id == product.id
+
+
+@pytest.mark.parametrize(
+    ("status", "expected"), [("superseded", "pending"), ("rejected", "rejected")]
+)
+async def test_regeneration_preserves_human_rejection(client, db_session, status, expected):
+    from src.modules.catalog.service.dictionaries import load_dictionaries
+    from src.modules.catalog.service.extractor import extract
+    from src.modules.products.service.matching_service import MatchingService
+
+    store = await _make_store(db_session)
+    offer = await _make_offer(db_session, store)
+    product = await _make_product(db_session, "fixture-product", "Fixture product")
+    candidate = await _make_candidate(db_session, offer, product, status=status)
+    attrs = extract(offer.title, await load_dictionaries(db_session))
+    await MatchingService._ensure_candidate(db_session, offer, product, 0.75, attrs)
+    await db_session.refresh(candidate)
+    assert candidate.status == expected

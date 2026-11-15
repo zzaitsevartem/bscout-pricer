@@ -73,6 +73,9 @@ export function OffersTable({ offers }: OffersTableProps) {
               <tr key={offer.id} className={cn(isCheapest && 'bg-status-success')}>
                 <td className={TABLE_TD}>
                   <div className="font-semibold text-slate">{offer.store?.name ?? DASH}</div>
+                  <div className="mt-1 max-w-[28rem] text-[13px] leading-5 text-body-muted">
+                    {offer.title}
+                  </div>
                   {isCheapest && (
                     <span className={cn(BADGE_BASE, BADGE_SUCCESS, 'mt-1')}>Самый дешёвый</span>
                   )}
