@@ -42,3 +42,4 @@ yarn-error.log*
 .claude/worktrees/
 
 # Project-local Codex defaults and skills are versioned with the repository.
+/.unlazy/

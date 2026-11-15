@@ -1,8 +1,0 @@
-/Users/zzaitsevartem/Desktop/projects/bscout/backend/src/modules/export/controller/__init__.py:1: StarletteDeprecationWarning: 'HTTP_413_REQUEST_ENTITY_TOO_LARGE' is deprecated. Use 'HTTP_413_CONTENT_TOO_LARGE' instead.
-  from src.modules.export.controller.export import router as export_router
-{"ts": "2026-11-15T17:06:26+0300", "level": "INFO", "logger": "bscout.mail", "message": "mail sent backend=console to=profi-acceptance@example.com subject=BScout: подтверждение адреса электронной почты", "request_id": "df1353773002444c9ae51e9f1366beae"}
-{"ts": "2026-11-15T17:06:26+0300", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST http://testserver/api/auth/register \"HTTP/1.1 201 Created\""}
-{"ts": "2026-11-15T17:06:26+0300", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET http://testserver/api/products/catalog?store=profi \"HTTP/1.1 200 OK\""}
-{"ts": "2026-11-15T17:06:26+0300", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET http://testserver/api/products/catalog?q=iPhone&store=profi \"HTTP/1.1 200 OK\""}
-{"ts": "2026-11-15T17:06:26+0300", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET http://testserver/api/products/catalog/9 \"HTTP/1.1 200 OK\""}
-{"saved": 10, "matched": 10, "catalog_total": 10, "search_total": 10, "product_id": 9}

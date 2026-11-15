@@ -1,1 +1,0 @@
-HOT30_CATALOG_VERIFIED total=10 returned=10
