@@ -1,0 +1,13 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/zzaitsevartem/Desktop/projects/bscout/frontend
+
+ ✓ |component| src/widgets/authorizedHome/ui/DeviceTracking.test.tsx (5 tests) 52ms
+ ✓ |component| src/widgets/authorizedHome/ui/TrackingOverview.test.tsx (3 tests) 60ms
+ ✓ |component| src/app/devices/[model_key]/DevicePage.test.tsx (4 tests) 95ms
+
+ Test Files  3 passed (3)
+      Tests  12 passed (12)
+   Start at  16:42:42
+   Duration  660ms (transform 83ms, setup 396ms, collect 196ms, tests 206ms, environment 561ms, prepare 93ms)
+

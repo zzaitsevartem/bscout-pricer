@@ -42,3 +42,9 @@ yarn-error.log*
 .claude/worktrees/
 
 # Project-local Codex defaults and skills are versioned with the repository.
+
+# Локальная инструкция разработчика
+ЗАПУСК.md
+
+# Резервные копии базы
+/backups/

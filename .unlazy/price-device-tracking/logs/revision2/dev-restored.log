@@ -1,0 +1,22 @@
+
+> bscout-frontend@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 11.2s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1880ms (1126 modules)
+ GET /login 200 in 2081ms
+(node:45431) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ GET /login 200 in 27ms
+ ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ✓ Compiled /account in 327ms (1148 modules)
+ ✓ Compiled / in 332ms (1210 modules)
+ ✓ Compiled /devices/[model_key] in 405ms (1270 modules)
+ ✓ Compiled /account/history in 277ms (1276 modules)
+ GET /account/history 200 in 394ms

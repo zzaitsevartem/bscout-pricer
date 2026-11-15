@@ -1,0 +1,5 @@
+time="2026-11-13T17:08:41+03:00" level=warning msg="Found orphan containers ([bscout-profi-browser-probe bscout-parser-check]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container bscout-backend Recreate 
+ Container bscout-backend Recreated 
+ Container bscout-backend Starting 
+ Container bscout-backend Started 

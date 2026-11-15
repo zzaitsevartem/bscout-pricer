@@ -1,0 +1,25 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> fb0762d20565, initial schema
+INFO  [alembic.runtime.migration] Running upgrade fb0762d20565 -> 336d8cc4267a, core: offers canonical dictionaries matching
+INFO  [alembic.runtime.migration] Running upgrade 336d8cc4267a -> c4115bee8c5e, users email citext case insensitive
+INFO  [alembic.runtime.migration] Running upgrade c4115bee8c5e -> 91a61aee668d, search history composite index
+INFO  [alembic.runtime.migration] Running upgrade 91a61aee668d -> e2e438553863, payments table and user trial_used flag
+INFO  [alembic.runtime.migration] Running upgrade e2e438553863 -> 1ea946afe7ef, tracked products and notifications
+INFO  [alembic.runtime.migration] Running upgrade 1ea946afe7ef -> 51e60c6b40f1, tracked product initial price baseline
+INFO  [alembic.runtime.migration] Running upgrade 51e60c6b40f1 -> a0ddb53734c7, refresh tokens and protect price history from store deletion
+INFO  [alembic.runtime.migration] Running upgrade a0ddb53734c7 -> 850c458e9790, email verification, password reset tokens and oauth identities
+INFO  [alembic.runtime.migration] Running upgrade 850c458e9790 -> b1c2d3e4f5a6, offer match_status review
+INFO  [alembic.runtime.migration] Running upgrade b1c2d3e4f5a6 -> 97c07d54808c, add user pending_email and email_change purpose
+INFO  [alembic.runtime.migration] Running upgrade 97c07d54808c -> d1932d23f697, two_step_email_change
+INFO  [alembic.runtime.migration] Running upgrade d1932d23f697 -> ca1001d72baa, broadcast campaigns
+INFO  [alembic.runtime.migration] Running upgrade ca1001d72baa -> c356386a2cd0, add username login field
+INFO  [alembic.runtime.migration] Running upgrade c356386a2cd0 -> 6a307de976b1, add username changed at column
+INFO  [alembic.runtime.migration] Running upgrade 6a307de976b1 -> 077299b69ec0, device sourced metadata
+INFO  [alembic.runtime.migration] Running upgrade 077299b69ec0 -> 20261113_device_tracking, Add device tracking and new-product notifications.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 20261113_device_tracking -> 077299b69ec0, Add device tracking and new-product notifications.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 077299b69ec0 -> 20261113_device_tracking, Add device tracking and new-product notifications.

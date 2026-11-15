@@ -1,0 +1,6 @@
+time="2026-11-13T17:07:54+03:00" level=warning msg="Found orphan containers ([bscout-profi-browser-probe bscout-parser-check]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container bscout-backend-run-0445cdaaa81e Creating 
+ Container bscout-backend-run-0445cdaaa81e Created 
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 077299b69ec0 -> 20261113_device_tracking, Add device tracking and new-product notifications.

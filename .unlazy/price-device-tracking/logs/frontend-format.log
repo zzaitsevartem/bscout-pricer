@@ -1,0 +1,4 @@
+src/widgets/authorizedHome/ui/TrackingOverview.tsx 59ms
+src/widgets/authorizedHome/ui/TrackingOverview.test.tsx 8ms
+src/widgets/authorizedHome/ui/DeviceTracking.test.tsx 10ms
+src/app/devices/[model_key]/DevicePage.test.tsx 12ms (unchanged)

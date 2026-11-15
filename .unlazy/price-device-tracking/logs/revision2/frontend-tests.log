@@ -1,0 +1,45 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/zzaitsevartem/Desktop/projects/bscout/frontend
+
+ ✓ |component| src/widgets/authorizedHome/ui/DeviceTracking.test.tsx (5 tests) 58ms
+ ✓ |component| src/widgets/authorizedHome/ui/TrackingOverview.test.tsx (3 tests) 71ms
+ ✓ |component| src/widgets/TariffPlans/ui/TariffPlans.test.tsx (3 tests) 5ms
+ ✓ |component| src/app/devices/[model_key]/DevicePage.test.tsx (4 tests) 75ms
+stderr | src/app/subscription/page.test.tsx > SubscriptionPage tracking usage > shows the real counter instead of promising it for later
+[models/notification] GET /notifications/unread-count: response does not match schema [
+  {
+    expected: 'number',
+    code: 'invalid_type',
+    path: [ 'unread_count' ],
+    message: 'Invalid input: expected number, received undefined'
+  }
+]
+
+stderr | src/app/subscription/page.test.tsx > SubscriptionPage tracking usage > falls back to the plan limit when usage is unavailable
+[models/notification] GET /notifications/unread-count: response does not match schema [
+  {
+    expected: 'number',
+    code: 'invalid_type',
+    path: [ 'unread_count' ],
+    message: 'Invalid input: expected number, received undefined'
+  }
+]
+
+stderr | src/app/subscription/page.test.tsx > SubscriptionPage tracking usage > reports a full quota
+[models/notification] GET /notifications/unread-count: response does not match schema [
+  {
+    expected: 'number',
+    code: 'invalid_type',
+    path: [ 'unread_count' ],
+    message: 'Invalid input: expected number, received undefined'
+  }
+]
+
+ ✓ |component| src/app/subscription/page.test.tsx (3 tests) 154ms
+
+ Test Files  5 passed (5)
+      Tests  18 passed (18)
+   Start at  17:05:20
+   Duration  1.28s (transform 253ms, setup 1.02s, collect 788ms, tests 363ms, environment 1.94s, prepare 257ms)
+
