@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "waves": {
+    "ready-1": {
+      "leaves": [
+        "leaf-1",
+        "leaf-2"
+      ],
+      "state": "complete",
+      "openedAt": "2026-11-15T11:37:34.013Z",
+      "started": {
+        "leaf-1": {
+          "handle": "/root/luna",
+          "at": "2026-11-15T11:37:59.516Z"
+        },
+        "leaf-2": {
+          "handle": "/root/terra",
+          "at": "2026-11-15T11:37:59.561Z"
+        }
+      },
+      "returned": {
+        "leaf-1": {
+          "at": "2026-11-15T11:39:54.919Z"
+        },
+        "leaf-2": {
+          "at": "2026-11-15T11:39:54.953Z"
+        }
+      },
+      "sealedAt": "2026-11-15T11:37:59.601Z",
+      "completedAt": "2026-11-15T11:39:54.953Z"
+    }
+  }
+}

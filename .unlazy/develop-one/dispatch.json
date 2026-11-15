@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "waves": {
+    "review-1": {
+      "leaves": [
+        "leaf-1.1.1"
+      ],
+      "state": "complete",
+      "openedAt": "2026-11-15T14:01:06.163Z",
+      "started": {
+        "leaf-1.1.1": {
+          "handle": "/root/security_review",
+          "at": "2026-11-15T14:01:22.088Z"
+        }
+      },
+      "returned": {
+        "leaf-1.1.1": {
+          "at": "2026-11-15T14:06:55.653Z"
+        }
+      },
+      "sealedAt": "2026-11-15T14:01:22.127Z",
+      "completedAt": "2026-11-15T14:06:55.653Z"
+    }
+  }
+}

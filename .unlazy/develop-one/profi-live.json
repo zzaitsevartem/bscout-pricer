@@ -1,0 +1,31 @@
+{
+  "fetched_at": "2026-11-15T14:00:34.307413+00:00",
+  "source": "profi",
+  "section": "zapchasti",
+  "limit": 10,
+  "errors": [
+    "fetch failed: https://siriust.ru/sitemap.xml (request failed after 3 attempts: https://siriust.ru/sitemap.xml (Server error '503 Service Unavailable' for url 'https://siriust.ru/sitemap.xml'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503))",
+    "catalog is empty: no product urls in sitemap"
+  ],
+  "responses": [
+    {
+      "url": "https://siriust.ru/sitemap.xml",
+      "status": 503,
+      "sha256": "7294bd2ead7f655ec96ce30c1a3086eaa94384feb2b593633052989a62e40ee5",
+      "bytes": 3923
+    },
+    {
+      "url": "https://siriust.ru/sitemap.xml",
+      "status": 503,
+      "sha256": "aee98399ff11d326875764088214a7248216efe4697ee983ae1977e97955a0f5",
+      "bytes": 3923
+    },
+    {
+      "url": "https://siriust.ru/sitemap.xml",
+      "status": 503,
+      "sha256": "620607f14c5db6ac8aa30f7d658e314b454491edda10dec5afc7da65763b914c",
+      "bytes": 3923
+    }
+  ],
+  "offers": []
+}

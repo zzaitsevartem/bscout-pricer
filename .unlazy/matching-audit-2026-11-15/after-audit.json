@@ -1,0 +1,1893 @@
+{
+  "counts": {
+    "status_auto": 3051,
+    "linked": 3052,
+    "status_unmatched": 3458,
+    "status_review": 8224,
+    "status_manual": 1
+  },
+  "issues": [],
+  "pending_total": 113,
+  "pending_device_different_or_unresolved": [
+    {
+      "candidate_id": 763,
+      "offer_id": 100673,
+      "title": "Системный разъем (зарядки) для Sony Xperia P",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "системный разъем",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 764,
+      "offer_id": 100684,
+      "title": "LCD дисплей для Sony Xperia E С1504/С1505/С1604/С1605 в сборе с тачскрином",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 766,
+      "offer_id": 100905,
+      "title": "Тачскрин для Sony Xperia E С1504 (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 767,
+      "offer_id": 100906,
+      "title": "Тачскрин для Sony Xperia L C2105/C2104",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 768,
+      "offer_id": 100907,
+      "title": "Тачскрин для Sony Xperia miro ST23i/ST23a",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 769,
+      "offer_id": 100908,
+      "title": "Тачскрин для Sony Xperia sola MT27i",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 770,
+      "offer_id": 100930,
+      "title": "Тачскрин для Sony-Ericsson Xperia arc/LT15i",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 771,
+      "offer_id": 101468,
+      "title": "Системный разъем (зарядки) для Sony Xperia Arc S LT18i",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "системный разъем",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 772,
+      "offer_id": 101576,
+      "title": "Дисплей Sony C6903, Sony L39h (Xperia Z1) с тачскрином в рамке (белый)",
+      "product_id": 197,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "white",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 773,
+      "offer_id": 101577,
+      "title": "Дисплей Sony C6903/ Sony L39h/Sony C6902/Sony C6906/(Xperia Z1)+тачcкрин (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 774,
+      "offer_id": 101579,
+      "title": "Дисплей Sony D2533/Sony D2502 (Xperia C3) с тачскрином (белый)",
+      "product_id": 197,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "white",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 775,
+      "offer_id": 101580,
+      "title": "Дисплей Sony D2533/Sony D2502 (Xperia C3) с тачскрином (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 776,
+      "offer_id": 101582,
+      "title": "Дисплей Sony D6503/Sony D6502 (Xperia Z2) с тачскрином (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 777,
+      "offer_id": 101583,
+      "title": "Дисплей Sony D6603/Sony D6633/Sony D6643/Sony D6653/Sony D6616 (Xperia Z3/Z3 Dual)+тачскрин (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 778,
+      "offer_id": 101588,
+      "title": "Дисплей Sony ST25i ( Xperia U)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 779,
+      "offer_id": 101589,
+      "title": "Дисплей Sony ST27i (Xperia Go)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 780,
+      "offer_id": 101619,
+      "title": "Пленка на дисплей для Sony Xperia X1 (глянцевая)",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 781,
+      "offer_id": 101681,
+      "title": "Шлейф/FLC Sony Xperia Z2 D6503 (разъем гарнитуры, датчик)",
+      "product_id": 192,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "шлейфы",
+        "part_type_code": "flex_cable",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 782,
+      "offer_id": 101704,
+      "title": "LCD дисплей для Sony Xperia XA (F3111, F3112) 5&quot; в сборе с тачскрином (белый)",
+      "product_id": 197,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "white",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 783,
+      "offer_id": 101708,
+      "title": "Тачскрин для Sony Xperia M2 (белый)",
+      "product_id": 199,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "white",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 784,
+      "offer_id": 102052,
+      "title": "Задняя крышка Sony C1904/C2005 (Xperia M/Xperia M Dual) белый",
+      "product_id": 472,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "white",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 785,
+      "offer_id": 102053,
+      "title": "Задняя крышка Sony C1904/C2005 (Xperia M/Xperia M Dual) черный",
+      "product_id": 977,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "black",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 786,
+      "offer_id": 102054,
+      "title": "Задняя крышка Sony C5502 (Xperia ZR) белый",
+      "product_id": 472,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "white",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 787,
+      "offer_id": 102055,
+      "title": "Задняя крышка Sony C6903 (Xperia Z1) фиолетовый",
+      "product_id": 1030,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "фиолетовый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "purple",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 788,
+      "offer_id": 102056,
+      "title": "Задняя крышка Sony C6903 (Xperia Z1) черный",
+      "product_id": 977,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "black",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 789,
+      "offer_id": 102094,
+      "title": "Дисплей для Sony Ericsson Xperia X8 / E15 / Rover EVO X8",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 790,
+      "offer_id": 102117,
+      "title": "Пленка на дисплей для Sony Xperia Arc (LT15i / X12) (глянцевая)",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 791,
+      "offer_id": 102159,
+      "title": "Шлейф/FLC Sony Xperia M2/ M2 Dual/ M2 Aqua (D2303/ D2302/ D2403) (микрофон, вибро)",
+      "product_id": 192,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "шлейфы",
+        "part_type_code": "flex_cable",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 792,
+      "offer_id": 103084,
+      "title": "Тачскрин для Sony Xperia M2/D2302/D2303/D2305/D2306",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 793,
+      "offer_id": 103347,
+      "title": "Тачскрин для Sony Ericsson Xperia X2",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 794,
+      "offer_id": 103443,
+      "title": "Нижняя плата F3111,F3112,F3113,F3115,F3116 (Xperia XA/Xperia XA Dual) с разъемом для зарядки",
+      "product_id": 1131,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "плата",
+        "part_type_code": "board",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 795,
+      "offer_id": 103444,
+      "title": "Нижняя плата Sony C1904 (Xperia M)/C2005 (Xperia M Dual) вибро/микрофон",
+      "product_id": 1131,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "плата",
+        "part_type_code": "board",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 796,
+      "offer_id": 103446,
+      "title": "Шлейф Sony C1904,C2005 (Xperia M) кнопки громкости,включен,камеры",
+      "product_id": 1079,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "кнопка громкости",
+        "part_type_code": "button",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 797,
+      "offer_id": 103447,
+      "title": "Шлейф Sony C2305 (Xperia C) кнопки включения,громкости,камеры",
+      "product_id": 1079,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": "sony-xperia-c-c2304",
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "кнопка включения",
+        "part_type_code": "button",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 798,
+      "offer_id": 103448,
+      "title": "Шлейф Sony C5502/C5503 (Xperia ZR) на боковые кнопки,вибро и микрофон",
+      "product_id": 192,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "шлейфы",
+        "part_type_code": "flex_cable",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 799,
+      "offer_id": 103449,
+      "title": "Шлейф Sony C6503 (Xperia ZL) кнопки включения,громкости,сенсором",
+      "product_id": 1079,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "кнопка включения",
+        "part_type_code": "button",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 800,
+      "offer_id": 103450,
+      "title": "Шлейф Sony C6902 (Xperia Z1) кнопки включения,громкости,микрофон",
+      "product_id": 1079,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "кнопка включения",
+        "part_type_code": "button",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 801,
+      "offer_id": 103451,
+      "title": "Шлейф Sony C6903 (Xperia Z1) c микрофоном",
+      "product_id": 192,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": "sony-xperia-c-c2304",
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "шлейфы",
+        "part_type_code": "flex_cable",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 812,
+      "offer_id": 104528,
+      "title": "Пленка на дисплей для Sony Xperia Sola (MT27i) (матовая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 813,
+      "offer_id": 104572,
+      "title": "Сумка футляр-книга Armor Case для Sony Xperia U / ST25i (Lux белая в коробке + плёнка)",
+      "product_id": 663,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "color_code": "white",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 802,
+      "offer_id": 103545,
+      "title": "Тачскрин для Sony Xperia C C2304 (белый)",
+      "product_id": 199,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": "sony-xperia-c-c2304",
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "white",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 803,
+      "offer_id": 103546,
+      "title": "Тачскрин для Sony Xperia SP/C5302/C5303 (белый)",
+      "product_id": 199,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "white",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 804,
+      "offer_id": 103547,
+      "title": "Тачскрин для Sony Xperia T3",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 805,
+      "offer_id": 103571,
+      "title": "Тачскрин для Sony Xperia T2 Ultra Dual",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 806,
+      "offer_id": 103588,
+      "title": "LCD дисплей для Sony Xperia Z2 D6502/D6503/D6543/L50W в сборе с тачскрином (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 807,
+      "offer_id": 104356,
+      "title": "Задняя крышка Sony Xperia M2",
+      "product_id": 288,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 808,
+      "offer_id": 104357,
+      "title": "Камера Sony Xperia Z1 (фронтальная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 809,
+      "offer_id": 104358,
+      "title": "Камера Sony Xperia Z1 compact (фронтальная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 810,
+      "offer_id": 104359,
+      "title": "Камера Sony Xperia Z2 (фронтальная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 811,
+      "offer_id": 104360,
+      "title": "Камера Sony Xperia Z3 (фронтальная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 814,
+      "offer_id": 104853,
+      "title": "Пленка на дисплей для Sony Xperia Arc (LT15i / X12) (глянцевая)",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 815,
+      "offer_id": 104854,
+      "title": "Пленка на дисплей для Sony Xperia Arc S (LT18i) (глянцевая)",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 816,
+      "offer_id": 104998,
+      "title": "Звонок для Sony Ericsson LT15i Xperia Arc в сборес антенной",
+      "product_id": 458,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "антенна",
+        "part_type_code": "antenna",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 817,
+      "offer_id": 105074,
+      "title": "Дисплей для Sony Ericsson Xperia SK17i mini pro всборе (белый)",
+      "product_id": 197,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "white",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 818,
+      "offer_id": 105278,
+      "title": "Задняя крышка KSH Soni Ericsson Xperia LT22i силикон-пластик+защитная пленка белая",
+      "product_id": 472,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "задняя крышка",
+        "color_code": "white",
+        "part_type_code": "back_cover",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 819,
+      "offer_id": 105379,
+      "title": "Пленка на дисплей для Sony Xperia Sola (MT27i) (глянцевая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 820,
+      "offer_id": 105380,
+      "title": "Пленка на дисплей для Sony Xperia Sola (MT27i) (матовая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 821,
+      "offer_id": 105484,
+      "title": "Разъем зарядки для Sony Ericsson Xperia R800",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 822,
+      "offer_id": 105516,
+      "title": "LCD дисплей для Sony Xperia Z3 compact D5803/D5833 в сборе с тачскрином (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 823,
+      "offer_id": 105544,
+      "title": "LCD дисплей для Sony Xperia M4 Aqua Dual E2333 в сборе с тачскрином черный",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 824,
+      "offer_id": 105552,
+      "title": "Тачскрин для Sony Xperia C4",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 825,
+      "offer_id": 105777,
+      "title": "Пленка на дисплей для Sony Xperia Arc (LT15i / X12) (глянцевая) Clever Shield",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 826,
+      "offer_id": 105779,
+      "title": "Пленка на дисплей для Sony Xperia SL (LT26ii) (глянцевая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 827,
+      "offer_id": 105780,
+      "title": "Пленка на дисплей для Sony Xperia SL (LT26ii) (матовая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 828,
+      "offer_id": 105781,
+      "title": "Пленка на дисплей для Sony Xperia Tipo (ST21i) (матовая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 829,
+      "offer_id": 106121,
+      "title": "Камера Sony Xperia Z3 Compact (фронтальная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 830,
+      "offer_id": 106127,
+      "title": "Тачскрин для Sony Xperia E4 E2104/E2105/E2115 (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 831,
+      "offer_id": 106194,
+      "title": "Разъем зарядки для Sony Ericsson Xperia LT15 / LT18 / MT15 / MT25 / X12",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 832,
+      "offer_id": 106195,
+      "title": "Разъем зарядки для Sony Xperia LT22i / / LT26i / WT19 / Z1 (C6903) / Z2 / ZR (C5502) / T2",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 833,
+      "offer_id": 106196,
+      "title": "Разъем зарядки для Sony Ericsson Xperia LT15i / LT18i / MT15i / MT11i",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 834,
+      "offer_id": 106197,
+      "title": "Разъем зарядки для Sony Ericsson Xperia SK17 / ST17",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 835,
+      "offer_id": 106292,
+      "title": "Пленка на дисплей для Sony Xperia Arc (LT15i / X12) (глянцевая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 836,
+      "offer_id": 106311,
+      "title": "Сумка футляр-книга Armor Case для Sony Xperia ion / LT28i (Lux белая в коробке + плёнка)",
+      "product_id": 663,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "color_code": "white",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 837,
+      "offer_id": 106312,
+      "title": "Сумка футляр-книга Armor Case для Sony Xperia ion / LT28i (Lux красная в коробке + плёнка)",
+      "product_id": 667,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "красный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "color_code": "red",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 838,
+      "offer_id": 106525,
+      "title": "Пленка на дисплей для Sony Xperia Arco S (LT26w) (глянцевая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 839,
+      "offer_id": 106526,
+      "title": "Пленка на дисплей для Sony Ericsson Xperia J / ST26i (глянцевая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 840,
+      "offer_id": 106532,
+      "title": "Разъем зарядки для Sony Xperia MT27i",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 841,
+      "offer_id": 106570,
+      "title": "Камера Sony Xperia Z1/Z1 compact/Z2 (основная)",
+      "product_id": 289,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "камера",
+        "part_type_code": "camera",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 842,
+      "offer_id": 106677,
+      "title": "Пленка на дисплей для Sony Xperia Miro (ST23i) (матовая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 843,
+      "offer_id": 106786,
+      "title": "Дисплей для Sony Ericsson Xperia X10 mini",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 844,
+      "offer_id": 106922,
+      "title": "Дисплей для Sony Ericsson Xperia SK17i mini pro всборе (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 845,
+      "offer_id": 107015,
+      "title": "Пленка на дисплей для Sony Ericsson Xperia J / ST26i (матовая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 850,
+      "offer_id": 107193,
+      "title": "Дисплей для Sony Xperia Ion + тачскрин (LT28h)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 851,
+      "offer_id": 107194,
+      "title": "Дисплей для Sony Xperia P (LT22i) + тачскрин",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 852,
+      "offer_id": 107196,
+      "title": "Дисплей для Sony Xperia acro S (LT26w) + тачскрин (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 853,
+      "offer_id": 107208,
+      "title": "Тачскрин для Sony Xperia Go (ST27i) (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 854,
+      "offer_id": 107209,
+      "title": "Тачскрин для Sony Xperia U (ST25i) (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 855,
+      "offer_id": 107283,
+      "title": "Дисплей для Sony Xperia Sola (MT27i)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 856,
+      "offer_id": 107284,
+      "title": "Дисплей для Sony Xperia U (ST25i)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 857,
+      "offer_id": 107415,
+      "title": "Пленка на дисплей для Sony Xperia GX (SO-04D) (глянцевая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 858,
+      "offer_id": 107416,
+      "title": "Пленка на дисплей для Sony Xperia GX (SO-04D) (матовая) Ainy",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 859,
+      "offer_id": 107417,
+      "title": "Пленка на дисплей для Sony Ericsson Xperia SP / C5302 (матовая) XDM",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 860,
+      "offer_id": 107418,
+      "title": "Пленка на дисплей для Sony Xperia SX (so-05d) (глянцевая) XDM",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 861,
+      "offer_id": 107419,
+      "title": "Пленка на дисплей для Sony Xperia SX (so-05d) (матовая) XDM",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 862,
+      "offer_id": 107566,
+      "title": "Дисплей для Sony Xperia Go (ST27i)",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 846,
+      "offer_id": 107092,
+      "title": "Динамик (полифонический) для Sony Xperia E (C1504/C1505) / Xperia C",
+      "product_id": 557,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": "sony-xperia-c-c2304",
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "динамик",
+        "part_type_code": "speaker",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 847,
+      "offer_id": 107095,
+      "title": "Динамик (полифонический) для Sony Xperia M (C1905) / Xperia M Dual (C1904/C2005)",
+      "product_id": 557,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "динамик",
+        "part_type_code": "speaker",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 848,
+      "offer_id": 107123,
+      "title": "Тачскрин для Sony Xperia E4g Dual 4.7 (E2003/ E2033) (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 849,
+      "offer_id": 107125,
+      "title": "Тачскрин для Sony Xperia M2 Agua D2403",
+      "product_id": 51,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 865,
+      "offer_id": 107940,
+      "title": "Динамик/Speaker Sony Xperia M4/M5 (E2303/E2312/E2333)",
+      "product_id": 557,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "динамик",
+        "part_type_code": "speaker",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 863,
+      "offer_id": 107801,
+      "title": "Пленка на дисплей для Sony Xperia TX (LT29i) (глянцевая)",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 864,
+      "offer_id": 107818,
+      "title": "Тачскрин для Sony Xperia Sola (MT27i) (черный)",
+      "product_id": 50,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "black",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 866,
+      "offer_id": 108016,
+      "title": "Дисплей для Sony Xperia ZL (C6503 / L35h) + тачскрин",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 867,
+      "offer_id": 108021,
+      "title": "Пленка на дисплей для Sony Xperia E (C1505) (глянцевая) Lux",
+      "product_id": 661,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "пленка",
+        "part_type_code": "screen_protector",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 868,
+      "offer_id": 108121,
+      "title": "Разъем зарядки для Sony Xperia LT30",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 869,
+      "offer_id": 108122,
+      "title": "Разъем зарядки для Sony Xperia ST26",
+      "product_id": 39,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "разъем зарядки",
+        "part_type_code": "charging_port",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 870,
+      "offer_id": 108298,
+      "title": "LCD дисплей для Sony Xperia Z5 Compact (E5823) (с тачскрином, без рамки) белый",
+      "product_id": 197,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "white",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 871,
+      "offer_id": 108300,
+      "title": "LCD дисплей для Sony Xperia Z5 Compact (E5823) (с тачскрином, без рамки) черный",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 872,
+      "offer_id": 108557,
+      "title": "Тачскрин для Sony Xperia M4 Aqua (E2333) (белый)",
+      "product_id": 199,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "white",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 873,
+      "offer_id": 108558,
+      "title": "Тачскрин для Sony Xperia E4 (E2104/ E2105) (белый)",
+      "product_id": 199,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "белый",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "тачскрин",
+        "color_code": "white",
+        "part_type_code": "touchscreen",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 874,
+      "offer_id": 108819,
+      "title": "LCD дисплей для Sony Xperia C4/C4 Dual 5.5&quot; (E5303/E5333) в сборе с тачскрином (черный)",
+      "product_id": 242,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "color": "черный",
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "lcd",
+        "color_code": "black",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 875,
+      "offer_id": 108991,
+      "title": "Дисплей для Sony Xperia E (С1505) / Xperia E Dual(C1605) + тачскрин в рамке",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    },
+    {
+      "candidate_id": 876,
+      "offer_id": 109303,
+      "title": "Дисплей для Sony Ericsson Xperia X10",
+      "product_id": 43,
+      "linked_device": "sony-xperia-z",
+      "extracted_device": null,
+      "features": {
+        "fuzzy": "device",
+        "device": "xperiaz",
+        "part_type": "дисплей",
+        "part_type_code": "display",
+        "device_model_key": "sony-xperia-z"
+      },
+      "active": true
+    }
+  ]
+}

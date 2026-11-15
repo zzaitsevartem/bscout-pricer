@@ -1,0 +1,6 @@
+2026-11-15T11:37:34.019Z dispatch ready-1 opened: leaf-1, leaf-2
+2026-11-15T11:37:59.530Z dispatch ready-1 started leaf-1 as /root/luna
+2026-11-15T11:37:59.568Z dispatch ready-1 started leaf-2 as /root/terra
+2026-11-15T11:37:59.607Z dispatch ready-1 sealed
+2026-11-15T11:39:54.926Z dispatch ready-1 returned leaf-1
+2026-11-15T11:39:54.959Z dispatch ready-1 returned leaf-2
