@@ -1,0 +1,14 @@
+[
+  {
+    "service": "pg",
+    "name": "bscout-develop-one-pg-8cf90cffb5",
+    "id": "c13c900b0684515e70d66cd694d73f6f9462e3ce133900da2cca6d92c28b7377",
+    "port": 50309
+  },
+  {
+    "service": "redis",
+    "name": "bscout-develop-one-redis-be994106f0",
+    "id": "17eccfb5b872ebd68cf3b3ac54ed3909b83986e8aa245e54d4d625e1a91f49bd",
+    "port": 50310
+  }
+]

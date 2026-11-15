@@ -34,3 +34,29 @@ async def test_validation_does_not_echo_input_or_context(schema, body, caplog):
     assert errors
     assert all(set(error) == {"loc", "type", "msg"} for error in errors)
     assert "secret" not in caplog.text
+
+
+async def test_invalid_email_does_not_echo_sensitive_fragment():
+    app = FastAPI()
+    app.add_exception_handler(RequestValidationError, validation_error_response)
+
+    async def endpoint(body: RegisterRequest):
+        return {"ok": True}
+
+    app.post("/register")(endpoint)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as c:
+        response = await c.post(
+            "/register",
+            json={
+                "email": "x@private-token💥.com",
+                "full_name": "name",
+                "password": "valid-password-123",
+            },
+        )
+
+    assert response.status_code == 422
+    assert "private-token" not in response.text
+    errors = response.json()["detail"]
+    email_error = next(error for error in errors if error["loc"] == ["body", "email"])
+    assert email_error["type"]
+    assert email_error["msg"] == "Enter a valid email address."

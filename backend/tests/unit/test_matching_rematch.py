@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -18,8 +18,12 @@ async def test_rematch_removes_invalid_auto_link_but_preserves_moderation(
     offer = SimpleNamespace(
         id=1, title="Unknown part", product_id=99, match_status=status, match_confidence=0.85
     )
+    db = AsyncMock()
+    result = MagicMock()
+    result.scalars.return_value = []
+    db.execute.return_value = result
 
-    await MatchingService.match_offer(AsyncMock(), offer, None)
+    await MatchingService.match_offer(db, offer, None)
 
     assert offer.product_id == expected_id
     assert offer.match_status == ("unmatched" if status == "auto" else status)
