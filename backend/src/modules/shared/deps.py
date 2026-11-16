@@ -20,7 +20,11 @@ async def get_current_user(
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authenticated",
+            detail=(
+                "Not authenticated"
+                if credentials is None
+                else "Invalid authentication credentials"
+            ),
         )
     payload = decode_token(credentials.credentials)
     if payload is None or payload.get("type") != "access":
