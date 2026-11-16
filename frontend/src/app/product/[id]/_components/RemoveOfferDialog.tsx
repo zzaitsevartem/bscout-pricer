@@ -1,5 +1,7 @@
 'use client';
-import { useEffect, useId, useRef } from 'react';
+
+import { useModalDialog } from '@/shared/lib/use-modal-dialog';
+import { useId, useRef } from 'react';
 
 export function RemoveOfferDialog({
   name,
@@ -18,19 +20,7 @@ export function RemoveOfferDialog({
   const cancel = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   const descriptionId = useId();
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const modal = dialog.current;
-    modal?.showModal();
-    cancel.current?.focus();
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      modal?.close();
-      document.body.style.overflow = overflow;
-      previous?.focus();
-    };
-  }, []);
+  useModalDialog(dialog, cancel);
   return (
     <dialog
       ref={dialog}

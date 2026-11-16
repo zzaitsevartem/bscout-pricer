@@ -1,7 +1,9 @@
 'use client';
 
+import { useModalDialog } from '@/shared/lib/use-modal-dialog';
+
 import { PageTransition } from '@/shared/ui/PageTransition';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/widgets/Header/ui/Header';
 import { Footer } from '@/widgets/Footer/ui/Footer';
@@ -98,19 +100,7 @@ function ClearHistoryDialog({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const modal = dialog.current;
-    modal?.showModal();
-    cancel.current?.focus();
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      modal?.close();
-      document.body.style.overflow = overflow;
-      previous?.focus();
-    };
-  }, []);
+  useModalDialog(dialog, cancel);
 
   return (
     <dialog

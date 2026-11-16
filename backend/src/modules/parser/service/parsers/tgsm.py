@@ -11,6 +11,13 @@ from bs4 import BeautifulSoup
 from src.modules.parser.service.base import BaseParser, ParseResult
 from src.modules.parser.service.exceptions import ParserError
 from src.modules.parser.service.parsers.bitrix_common import matches_section
+from src.modules.parser.service.parsers.html_common import (
+    clean_text as _clean,
+)
+from src.modules.parser.service.parsers.html_common import (
+    extract_breadcrumbs,
+    extract_canonical,
+)
 from src.modules.parser.service.parsers.sitemap_common import SitemapParserMixin
 from src.modules.parser.service.utils import safe_price, safe_request
 
@@ -34,11 +41,6 @@ _PRODUCT_ID_RE = re.compile(r"product_id=(\d+)")
 _QTY_RE = re.compile(r"(\d+)\s*шт")
 _PRICE_TEXT_RE = re.compile(r"Цена\s*:\s*([\d\s .,]+)")
 
-
-def _clean(value: str | None) -> str:
-    if not value:
-        return ""
-    return re.sub(r"\s+", " ", value.replace("\xa0", " ")).strip()
 
 
 def _branch_state(text: str) -> tuple[bool | None, int | None]:
@@ -137,8 +139,8 @@ class TgsmParser(SitemapParserMixin, BaseParser):
             return None
 
         stock_status, stock_qty, branches = self._extract_stock(soup, url)
-        breadcrumbs = self._extract_breadcrumbs(soup)
-        canonical = self._extract_canonical(soup) or url
+        breadcrumbs = extract_breadcrumbs(soup)
+        canonical = extract_canonical(soup) or url
 
         raw = {"currency": "RUB", "breadcrumbs": breadcrumbs}
         if sku_code:
@@ -196,21 +198,12 @@ class TgsmParser(SitemapParserMixin, BaseParser):
 
         match = _PRODUCT_ID_RE.search(html_lib.unescape(url or ""))
         if match is None:
-            canonical = self._extract_canonical(soup)
+            canonical = extract_canonical(soup)
             if canonical:
                 match = _PRODUCT_ID_RE.search(canonical)
         if match is not None:
             return match.group(1), sku_code
         return sku_code, sku_code
-
-    def _extract_canonical(self, soup: BeautifulSoup) -> str:
-        link = soup.select_one("link[rel=canonical]")
-        if link is not None and link.get("href"):
-            return html_lib.unescape(link.get("href").strip())
-        meta = soup.select_one('meta[property="og:url"]')
-        if meta is not None and meta.get("content"):
-            return html_lib.unescape(meta.get("content").strip())
-        return ""
 
     def _extract_image(self, soup: BeautifulSoup) -> str:
         for selector in ("meta[itemprop=image]", 'meta[property="og:image"]'):
@@ -227,14 +220,6 @@ class TgsmParser(SitemapParserMixin, BaseParser):
                 return text
         meta = soup.select_one('meta[name=description], meta[property="og:description"]')
         return _clean(meta.get("content")) if meta is not None else ""
-
-    def _extract_breadcrumbs(self, soup: BeautifulSoup) -> list[str]:
-        crumbs: list[str] = []
-        for node in soup.select("[itemprop=itemListElement] [itemprop=name]"):
-            text = _clean(node.get("content") or node.get_text(" ", strip=True))
-            if text and text.lower() != "главная":
-                crumbs.append(text)
-        return crumbs
 
     def _extract_old_price(self, soup: BeautifulSoup, retail: Decimal) -> Decimal | None:
         anchor = soup.find(string=_PRICE_TEXT_RE)

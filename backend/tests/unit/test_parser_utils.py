@@ -128,3 +128,56 @@ def test_empty_section_lets_everything_through():
 )
 def test_safe_price(text, expected):
     assert safe_price(text) == expected
+
+
+def test_shared_html_helpers_preserve_canonical_and_breadcrumb_rules():
+    from bs4 import BeautifulSoup
+
+    from src.modules.parser.service.parsers.html_common import (
+        clean_text,
+        extract_breadcrumbs,
+        extract_canonical,
+    )
+
+    soup = BeautifulSoup(
+        '<link rel="canonical" href=" https://example.com/?a=1&amp;b=2 ">'
+        '<meta property="og:url" content="https://fallback.example">'
+        '<span itemprop="itemListElement"><span itemprop="name">Главная</span></span>'
+        '<span itemprop="itemListElement"><span itemprop="name">'
+        "\xa0Запчасти\tдля  телефона</span></span>",
+        "html.parser",
+    )
+    assert clean_text(None) == ""
+    assert clean_text(" A\xa0 B\t C ") == "A B C"
+    assert extract_canonical(soup) == "https://example.com/?a=1&b=2"
+    assert extract_breadcrumbs(soup) == ["Запчасти для телефона"]
+    soup.link.decompose()
+    assert extract_canonical(soup) == "https://fallback.example"
+    soup.meta.decompose()
+    assert extract_canonical(soup) == ""
+
+
+@pytest.mark.parametrize(
+    ("parser_class", "item_class"),
+    [
+        ("LibertiParser", "product-list-item"),
+        ("DivizionParser", "catalog_item"),
+    ],
+)
+def test_bitrix_listing_retains_order_and_ignores_unparsed_items(
+    parser_class, item_class, monkeypatch
+):
+    from src.modules.parser.service.parsers.divizion import DivizionParser
+    from src.modules.parser.service.parsers.liberti import LibertiParser
+
+    parser = {"LibertiParser": LibertiParser, "DivizionParser": DivizionParser}[parser_class]()
+    seen = []
+
+    def convert(item, category):
+        seen.append((item["data-id"], category))
+        return item["data-id"] if item["data-id"] != "2" else None
+
+    monkeypatch.setattr(parser, "_item_to_result", convert)
+    markup = "".join(f'<div class="{item_class}" data-id="{i}"></div>' for i in range(3))
+    assert parser.parse_listing(markup) == ["0", "1"]
+    assert [item_id for item_id, _ in seen] == ["0", "1", "2"]

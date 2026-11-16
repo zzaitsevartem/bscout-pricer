@@ -97,14 +97,14 @@ docker exec bscout-postgres psql -U bscout -d bscout -c "
 ### Инфраструктура
 
 - 🐳 **Docker Compose** — локальная среда (Postgres + Redis)
-- 📦 **Poetry** — управление зависимостями Python
+- 📦 **pip** — установка Python-зависимостей из `requirements.txt`
 - 📦 **npm** — управление зависимостями JS
 
 ---
 
 ## 📦 Библиотеки и зависимости
 
-### Backend (`backend/pyproject.toml`)
+### Backend (`backend/requirements.txt`; метаданные пакета в `backend/pyproject.toml`)
 
 | Библиотека | Версия | Назначение | Где используется |
 |---|---|---|---|
@@ -219,9 +219,12 @@ docker compose -f docker/docker-compose.yml up -d
 ```bash
 cd backend
 cp .env.example .env          # Скопировать шаблон переменных
-poetry install                # Установить зависимости
-poetry run alembic upgrade head  # Применить миграции
-poetry run uvicorn src.main:app --reload  # Запустить сервер
+python3.11 -m venv .venv      # Создать окружение Python 3.11
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+# Для установки backend как пакета вместо запуска из checkout: python -m pip install .
+python -m alembic upgrade head  # Применить миграции
+uvicorn src.main:app --reload   # Запустить сервер
 ```
 
 ### 3. Настроить и запустить Frontend
@@ -261,9 +264,10 @@ npm run format:check # ✨ Проверка форматирования
 
 ```bash
 cd backend
-poetry run uvicorn src.main:app --reload          # 🏃 Dev-сервер на :8000
-poetry run alembic revision --autogenerate -m "msg"  # ➕ Создать миграцию
-poetry run alembic upgrade head                   # ⬆️ Применить мигр��ции
+source .venv/bin/activate
+uvicorn src.main:app --reload                        # 🏃 Dev-сервер на :8000
+python -m alembic revision --autogenerate -m "msg"   # ➕ Создать миграцию
+python -m alembic upgrade head                       # ⬆️ Применить миграции
 ```
 
 ### Docker

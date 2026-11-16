@@ -297,7 +297,7 @@ Breakpoints (Tailwind default):
 ### 10.3 Типы
 
 ```typescript
-// shadcn компоненты через cn() + VariantProps из class-variance-authority
+// shadcn-компоненты используют cn() и явные типы вариантов
 // SVG-иконки: React.FC<React.SVGProps<SVGSVGElement>>
 // Изображения: через StaticImageData → .src
 ```
