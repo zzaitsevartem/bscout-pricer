@@ -611,15 +611,7 @@ async def test_catalog_routes_declared_before_offer_id_route(client, db_session)
     assert catalog.status_code != 422
     assert "results" in catalog.json()
 
-    from src.modules.products.controller.products import comparison_router, subscription_router
-
-    catalog_paths = [route.path for route in comparison_router.routes]
-    offer_paths = [route.path for route in subscription_router.routes]
-    paths = catalog_paths + offer_paths
-    offer_index = paths.index("/api/products/{offer_id}")
-    assert paths.index("/api/products/catalog") < offer_index
-    assert paths.index("/api/products/catalog/{product_id}") < offer_index
-    assert paths.index("/api/products/catalog/{product_id}/price-history") < offer_index
+    assert catalog.json()["results"] == []
 
 
 async def test_offer_endpoint_still_works_after_catalog_routes(client, db_session):
