@@ -68,13 +68,13 @@ export function SearchLayout({
     chips.push({ key: 'in_stock', label: state.in_stock ? 'В наличии' : 'Нет в наличии' });
 
   return (
-    <div className="search-palette max-w-[1200px] mx-auto px-6">
-      <div className="grid grid-cols-[264px_1fr] gap-8 py-8 min-h-[calc(100vh-64px)] max-lg:grid-cols-1">
+    <div className="search-palette max-w-[1200px] mx-auto px-6 max-sm:px-4">
+      <div className="grid grid-cols-[264px_1fr] gap-8 py-8 max-sm:gap-6 max-sm:py-6 min-h-[calc(100vh-64px)] max-lg:grid-cols-1 max-lg:content-start">
         <div className="self-start lg:sticky lg:top-20">
-          <div className="rounded-2xl border border-border-light-subtle p-4 lg:border-0 lg:p-0">
+          <div className="rounded-2xl bg-search-row p-4 lg:bg-transparent lg:p-0">
             <button
               type="button"
-              className="flex w-full items-center justify-between font-semibold text-slate lg:hidden"
+              className="flex min-h-11 w-full items-center justify-between rounded-lg font-semibold text-slate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate lg:hidden"
               aria-expanded={filtersOpen}
               aria-controls="catalog-filters-panel"
               onClick={() => setFiltersOpen((open) => !open)}
@@ -147,7 +147,7 @@ export function SearchLayout({
               <button
                 type="button"
                 onClick={controls.onReset}
-                className="text-[14px] text-body-subtle underline underline-offset-[3px] hover:text-slate"
+                className="min-h-11 text-[14px] text-body-subtle underline underline-offset-[3px] hover:text-slate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate"
               >
                 Сбросить всё
               </button>
@@ -169,7 +169,7 @@ export function SearchLayout({
                     onChange={(event) =>
                       controls.onSortChange(event.target.value as CatalogSortOption)
                     }
-                    className="appearance-none rounded-full pr-9 pl-3 py-2 text-[15px] text-slate bg-ivory border border-border-input transition-colors focus:outline-none focus:border-border-default"
+                    className="appearance-none rounded-full pr-9 pl-3 py-2 text-[15px] text-slate bg-ivory border border-border-input transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate"
                   >
                     {SORT_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>

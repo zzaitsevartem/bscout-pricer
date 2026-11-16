@@ -55,7 +55,7 @@ export function OfferImportSection() {
     <section id="import">
       <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
         <div>
-          <h3 className="text-2xl font-semibold text-slate mb-0">Импорт офферов</h3>
+          <h1 className="mb-0 text-[40px] font-semibold text-slate max-sm:text-[32px]">Импорт офферов</h1>
           <p className="text-[15px] text-body-subtle mb-0 mt-1">
             JSON-массив в формате <code className="font-mono text-[13px]">OfferImportItem</code>.
           </p>

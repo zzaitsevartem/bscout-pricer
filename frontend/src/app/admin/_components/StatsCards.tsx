@@ -9,7 +9,7 @@ export function StatsCards() {
 
   if (stats.isError) {
     return (
-      <div className="p-5 border border-border-light rounded-[24px] bg-ivory-elevated mb-8">
+      <div role="alert" className="mb-8 rounded-2xl bg-search-row p-5">
         <div className="text-[15px] text-clay">
           {apiErrorMessage(stats.error, 'Не удалось загрузить статистику')}
         </div>
@@ -32,10 +32,10 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-8 max-lg:grid-cols-2 max-[480px]:grid-cols-1">
+    <div className="mb-12 grid grid-cols-4 gap-x-6 gap-y-8 max-xl:grid-cols-2">
       {cards.map((card) => (
-        <div key={card.label} className="p-5 border border-border-light rounded-[24px] bg-ivory-elevated">
-          <div className="text-[32px] font-bold text-slate leading-none mb-1">
+        <div key={card.label} className="border-l border-border-light-subtle pl-6 first:border-l-0 first:pl-0 max-xl:odd:border-l-0 max-xl:odd:pl-0">
+          <div className="mb-3 text-[36px] font-semibold leading-none tabular-nums text-slate">
             {card.value === undefined ? '—' : formatNumber(card.value)}
           </div>
           <div className="text-[14px] text-body-subtle">{card.label}</div>

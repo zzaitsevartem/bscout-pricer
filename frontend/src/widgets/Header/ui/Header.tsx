@@ -46,7 +46,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border-light-subtle bg-ivory">
-      <div className="mx-auto flex h-[72px] max-w-[1280px] items-center gap-5 px-6 max-md:h-16 max-md:gap-2 max-md:px-5">
+      <div className="mx-auto flex h-[72px] max-w-[1280px] items-center gap-4 px-6 max-md:h-16 max-md:gap-2 max-md:px-5">
         <Link href="/" className="flex shrink-0 items-center rounded-full no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate">
           <Image
             src="/Logo.svg"
@@ -78,7 +78,7 @@ const Header: React.FC = () => {
           ))}
         </nav>
 
-        <HeaderSearch className="hidden min-w-0 max-w-[480px] flex-1 lg:block" />
+        <HeaderSearch className="hidden min-w-0 max-w-[320px] flex-1 lg:block" />
 
         <div className="ml-auto hidden shrink-0 items-center gap-2 lg:flex">
           <ThemeToggle />
@@ -92,6 +92,10 @@ const Header: React.FC = () => {
           <span aria-hidden="true" className="mx-1 h-6 w-px bg-border-light-subtle" />
           <Link href="/faq" className="btn-icon rounded-full" aria-label="Частые вопросы" title="Частые вопросы">
             <CircleQuestionMark />
+          </Link>
+          <Link href="/search" className="btn-ghost btn-sm gap-2 px-2">
+            <SearchIcon width={18} height={18} aria-hidden="true" />
+            На страницу поиска
           </Link>
         </div>
 
@@ -129,7 +133,7 @@ const Header: React.FC = () => {
             <HeaderSearch className="w-full max-w-[320px]" onSubmitted={closeMenu} />
             <nav>
               <ul className="flex flex-col items-center gap-8 list-none p-0">
-                {[...navItems, { href: '/faq', label: 'FAQ' }].map((item) => (
+                {[{ href: '/search', label: 'На страницу поиска' }, ...navItems, { href: '/faq', label: 'FAQ' }].map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}

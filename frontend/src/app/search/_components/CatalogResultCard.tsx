@@ -23,7 +23,7 @@ export function CatalogResultCard({ item }: { item: CatalogItemResponse }) {
         : null;
 
   return (
-    <div className="flex gap-4 p-4 items-center rounded-2xl border border-border-input bg-ivory-elevated">
+    <div className="group relative isolate flex items-center gap-4 rounded-2xl border border-border-input bg-ivory p-5 transition-colors hover:border-border-default hover:bg-search-row focus-within:border-border-default max-sm:flex-wrap max-sm:p-4">
       <div className="w-16 h-16 bg-ivory-warm flex items-center justify-center text-body-muted text-xs flex-shrink-0">
         <CatalogImage imageUrl={item.image_url} name={item.canonical_name} />
       </div>
@@ -31,7 +31,7 @@ export function CatalogResultCard({ item }: { item: CatalogItemResponse }) {
       <div className="flex-1 min-w-0">
         <Link
           href={`/product/${item.id}`}
-          className="text-base font-semibold text-slate no-underline block mb-1 hover:underline decoration-brand-green underline-offset-[6px] dark:decoration-current dark:underline-offset-auto"
+          className="mb-1 block text-base font-semibold text-slate no-underline after:absolute after:inset-0 after:rounded-2xl group-hover:underline decoration-brand-green underline-offset-4 focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-slate"
         >
           {item.canonical_name}
         </Link>
@@ -47,7 +47,7 @@ export function CatalogResultCard({ item }: { item: CatalogItemResponse }) {
         </div>
       </div>
 
-      <div className="text-right flex-shrink-0">
+      <div className="flex-shrink-0 text-right max-sm:w-full max-sm:pl-20">
         <div className="text-lg font-bold text-slate">
             {item.min_price_retail === null ? 'Нет цены' : `от ${formatPrice(item.min_price_retail)}`}
           </div>
@@ -59,7 +59,7 @@ export function CatalogResultCard({ item }: { item: CatalogItemResponse }) {
                   href={item.source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="break-words underline underline-offset-2 hover:text-slate"
+                  className="relative z-10 rounded break-words underline underline-offset-2 hover:text-slate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate"
                 >
                   {item.source.store_name}
                 </a>
@@ -74,7 +74,7 @@ export function CatalogResultCard({ item }: { item: CatalogItemResponse }) {
         <div className="text-[13px] text-body-subtle">
           {storesLabel(item.stores_count)} · {offersLabel(item.offers_count)}
         </div>
-        <div className="mt-2 flex justify-end">
+        <div className="relative z-10 ml-auto mt-2 flex w-fit justify-end">
           <TrackButton productId={item.id} size="sm" />
         </div>
       </div>

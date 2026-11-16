@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import {
   useAdminUsers,
   useToggleUserActive,
@@ -101,8 +102,9 @@ function UserRow({
   );
 }
 
-export function UsersTable() {
-  const [limit, setLimit] = useState(PREVIEW_LIMIT);
+export function UsersTable({ preview = false }: { preview?: boolean }) {
+  const limit = preview ? PREVIEW_LIMIT : FULL_LIMIT;
+  const Heading = preview ? 'h2' : 'h1';
   const users = useAdminUsers(0, limit);
   const me = useMe();
   const currentUserId = me.data?.id;
@@ -123,14 +125,12 @@ export function UsersTable() {
 
   return (
     <section id="users">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-semibold text-slate mb-0">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <Heading className={cn('mb-0 font-semibold text-slate', preview ? 'text-2xl' : 'text-[40px] max-sm:text-[32px]')}>
           {limit === PREVIEW_LIMIT ? 'Последние пользователи' : 'Все пользователи'}
-        </h3>
-        {limit === PREVIEW_LIMIT && (
-          <button type="button" onClick={() => setLimit(FULL_LIMIT)} className="btn-arrow">
-            Все пользователи
-          </button>
+        </Heading>
+        {preview && limit === PREVIEW_LIMIT && (
+          <Link href="/admin/users" className="btn-arrow rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate">Все пользователи</Link>
         )}
       </div>
 

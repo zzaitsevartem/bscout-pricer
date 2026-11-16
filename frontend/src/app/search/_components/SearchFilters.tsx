@@ -35,7 +35,7 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
   }
 
   return (
-    <div className="pb-6 mb-6 border-b border-border-light-subtle">
+    <div className="mb-7">
       <h4 className="text-[15px] font-semibold text-slate mb-3">{title}</h4>
       {searchable && (
         <input
@@ -48,7 +48,7 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
           className="mb-3 w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
         />
       )}
-      <div className="flex max-h-48 overflow-y-auto flex-col gap-2 pr-1">
+      <div className="flex max-h-48 overflow-y-auto flex-col gap-1 pr-1">
         {visible.map((option) => {
           const selected = option.id === selectedId;
           return (
@@ -58,7 +58,7 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
               onClick={() => onSelect(selected ? null : option.id)}
               aria-pressed={selected}
               className={cn(
-                'inline-flex items-center gap-2 text-left text-[15px] transition-colors',
+                'inline-flex min-h-9 items-center gap-2 rounded-lg text-left text-[15px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate',
                 selected ? 'text-slate font-medium' : 'text-body-subtle hover:text-slate',
               )}
             >
@@ -131,7 +131,7 @@ export function SearchFilters({
       />
 
 
-      <div className="pb-6 mb-6 border-b border-border-light-subtle">
+      <div className="mb-7">
         <label htmlFor="catalog-store" className="block text-[15px] font-semibold text-slate mb-3">
           Магазин
         </label>
@@ -196,7 +196,7 @@ function PriceRange({
 }) {
   return (
     <form
-      className="pb-6 mb-6 border-b border-border-light-subtle"
+      className="mb-7"
       onSubmit={(event) => {
         event.preventDefault();
         const form = event.currentTarget;
