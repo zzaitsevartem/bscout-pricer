@@ -75,6 +75,7 @@ class TrackedDeviceResponse(BaseModel):
     name: str
     model_key: str
     brand: str
+    products_count: int
 
 
 class TrackedDeviceMutationResponse(BaseModel):

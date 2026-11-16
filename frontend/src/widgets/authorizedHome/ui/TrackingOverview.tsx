@@ -98,10 +98,10 @@ function TrackedCard({ items }: { items: TrackedProductResponse[] }) {
           <TrackingPreviewRow key={tracked.id}>
             <Link
               href={`/product/${tracked.product_id}`}
-              className="flex-1 truncate text-[14px] text-slate transition-colors hover:text-olive"
+              className="min-w-0 flex-1 text-[14px] text-slate transition-colors hover:text-olive after:absolute after:inset-0 after:rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
               title={tracked.canonical_name}
             >
-              {tracked.canonical_name}
+              <span className="block truncate">{tracked.canonical_name}</span>
             </Link>
             <div className="flex flex-1 gap-1" aria-hidden="true">
               {[0, 1, 2, 3].map((i) => (
@@ -117,7 +117,7 @@ function TrackedCard({ items }: { items: TrackedProductResponse[] }) {
             <button
               type="button"
               aria-label={`Удалить ${tracked.canonical_name} из отслеживания`}
-              className="w-[76px] flex-none rounded-lg px-2 py-2 text-right text-[14px] font-semibold text-clay transition-colors hover:bg-status-danger hover:text-clay-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+              className="relative z-10 w-[76px] flex-none rounded-lg px-2 py-2 text-right text-[14px] font-semibold text-clay transition-colors hover:bg-status-danger hover:text-clay-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
               onClick={() => {
                 mutation.reset();
                 setRemoving(tracked);

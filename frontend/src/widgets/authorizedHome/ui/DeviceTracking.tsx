@@ -39,16 +39,21 @@ export function DeviceTracking() {
             ) : devices.data?.length ? (
               devices.data.map((device) => (
                 <TrackingPreviewRow key={device.id}>
-                  <Link
-                    className="min-w-0 flex-1 break-words text-[14px] text-slate transition-colors hover:text-olive"
-                    href={`/devices/${encodeURIComponent(device.model_key)}`}
-                  >
-                    {device.name.toLocaleLowerCase().startsWith(device.brand.toLocaleLowerCase())
-                      ? device.name
-                      : `${device.brand} ${device.name}`}
-                  </Link>
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      className="break-words text-[14px] text-slate transition-colors hover:text-olive after:absolute after:inset-0 after:rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+                      href={`/devices/${encodeURIComponent(device.model_key)}`}
+                    >
+                      {device.name.toLocaleLowerCase().startsWith(device.brand.toLocaleLowerCase())
+                        ? device.name
+                        : `${device.brand} ${device.name}`}
+                    </Link>
+                    <p className="mt-1 text-[12px] text-body-muted">
+                      Количество запчастей: {device.products_count}
+                    </p>
+                  </div>
                   <button
-                    className="w-20 flex-none rounded-lg px-2 py-2 text-right text-[14px] font-semibold text-clay transition-colors hover:bg-status-danger hover:text-clay-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
+                    className="relative z-10 w-20 flex-none rounded-lg px-2 py-2 text-right text-[14px] font-semibold text-clay transition-colors hover:bg-status-danger hover:text-clay-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay"
                     disabled={mutation.isPending}
                     onClick={() => {
                       mutation.reset();

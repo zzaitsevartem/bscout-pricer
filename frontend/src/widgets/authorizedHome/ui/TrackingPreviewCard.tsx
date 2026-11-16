@@ -17,7 +17,7 @@ export function TrackingPreviewCard({
 
 export function TrackingPreviewRow({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-[58px] items-center gap-3 rounded-xl bg-ivory p-3 transition-colors hover:bg-ivory-warm">
+    <div className="relative flex min-h-[58px] items-center gap-3 rounded-xl bg-ivory p-3 transition-colors hover:bg-ivory-warm">
       {children}
     </div>
   );

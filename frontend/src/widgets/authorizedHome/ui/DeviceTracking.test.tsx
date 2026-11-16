@@ -23,7 +23,15 @@ const {
     ],
   })),
   trackedDevices: {
-    current: [{ id: 1, name: 'iPhone 15', brand: 'Apple', model_key: 'apple-iphone-15' }],
+    current: [
+      {
+        id: 1,
+        name: 'iPhone 15',
+        brand: 'Apple',
+        model_key: 'apple-iphone-15',
+        products_count: 12,
+      },
+    ],
   },
   mutationError: { current: false },
 }));
@@ -52,7 +60,13 @@ afterEach(() => {
   vi.useRealTimers();
   vi.clearAllMocks();
   trackedDevices.current = [
-    { id: 1, name: 'iPhone 15', brand: 'Apple', model_key: 'apple-iphone-15' },
+    {
+      id: 1,
+      name: 'iPhone 15',
+      brand: 'Apple',
+      model_key: 'apple-iphone-15',
+      products_count: 12,
+    },
   ];
   mutationError.current = false;
 });
@@ -75,14 +89,15 @@ describe('device tracking', () => {
     render(<DeviceTracking />);
     const header = screen.getByText('Устройство').parentElement;
     const card = header?.parentElement;
-    expect(header).toHaveClass('bg-slate', 'p-3', 'text-ivory');
+    expect(header).toHaveClass('bg-brand-green', 'p-3', 'text-ivory');
     expect(card).toHaveClass('min-h-[340px]', 'gap-4', 'rounded-[24px]', 'bg-ivory-warm', 'p-6');
     expect(screen.getByText('Действие')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Apple iPhone 15' }).parentElement).toHaveClass(
-      'min-h-[58px]',
-      'bg-ivory',
-      'p-3',
-    );
+    expect(screen.getByText('Количество запчастей: 12')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Apple iPhone 15' })).toHaveClass('after:absolute', 'after:inset-0');
+    expect(screen.getByRole('button', { name: /Удалить iPhone 15/ })).toHaveClass('relative', 'z-10');
+    expect(
+      screen.getByRole('link', { name: 'Apple iPhone 15' }).parentElement?.parentElement,
+    ).toHaveClass('min-h-[58px]', 'bg-ivory', 'p-3');
     expect(card).not.toContainElement(screen.getByLabelText('Найти устройство'));
     expect(screen.getByRole('link', { name: 'Apple iPhone 15' })).toHaveAttribute(
       'href',
