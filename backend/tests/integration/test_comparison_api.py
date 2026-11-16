@@ -611,9 +611,10 @@ async def test_catalog_routes_declared_before_offer_id_route(client, db_session)
     assert catalog.status_code != 422
     assert "results" in catalog.json()
 
-    from src.main import app
+    from src.modules.products.controller.products import router
 
-    paths = [route.path for route in app.routes if hasattr(route, "path")]
+    paths = [route.path for route in router.routes if hasattr(route, "path")]
+    assert "/api/products/{offer_id}" in paths
     offer_index = paths.index("/api/products/{offer_id}")
     assert paths.index("/api/products/catalog") < offer_index
     assert paths.index("/api/products/catalog/{product_id}") < offer_index
