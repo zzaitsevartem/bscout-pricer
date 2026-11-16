@@ -3,7 +3,7 @@ import html as html_lib
 import re
 from contextlib import asynccontextmanager
 from decimal import Decimal
-from urllib.parse import quote, urljoin, urlparse
+from urllib.parse import quote, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -13,7 +13,8 @@ from src.modules.parser.service.base import BaseParser, ParseResult
 from src.modules.parser.service.exceptions import ParserAuthError, ParserError
 from src.modules.parser.service.parsers.bitrix_common import matches_section
 from src.modules.parser.service.parsers.profi_browser import ProfiBrowserSession
-from src.modules.parser.service.utils import parse_price, safe_request
+from src.modules.parser.service.parsers.sitemap_common import SitemapParserMixin
+from src.modules.parser.service.utils import safe_price, safe_request
 
 STORE_SLUG = "profi"
 STORE_NAME = "Профи"
@@ -54,28 +55,19 @@ def _clean(value: str | None) -> str:
     return re.sub(r"\s+", " ", value.replace("\xa0", " ")).strip()
 
 
-def _safe_price(text: str | None) -> Decimal | None:
-    if text is None:
-        return None
-    try:
-        return parse_price(text)
-    except ParserError:
-        return None
-
-
 def _price_from_block(block) -> Decimal | None:
     if block is None:
         return None
     for node in block.select(".ty-price-num"):
         text = _clean(node.get_text(" ", strip=True))
         if any(ch.isdigit() for ch in text):
-            price = _safe_price(text)
+            price = safe_price(text)
             if price is not None:
                 return price
     prices = block.select(".ty-price")
     if len(prices) != 1:
         return None
-    return _safe_price(_clean(prices[0].get_text(" ", strip=True)))
+    return safe_price(_clean(prices[0].get_text(" ", strip=True)))
 
 
 def _stock_from_text(text: str) -> tuple[str, int | None]:
@@ -91,8 +83,10 @@ def _stock_from_text(text: str) -> tuple[str, int | None]:
     return "unknown", qty
 
 
-class ProfiParser(BaseParser):
+class ProfiParser(SitemapParserMixin, BaseParser):
     supports_catalog_batches = True
+    sitemap_path = SITEMAP_PATH
+    max_sitemap_depth = MAX_SITEMAP_DEPTH
 
     def __init__(
         self,
@@ -138,26 +132,6 @@ class ProfiParser(BaseParser):
             return None
         return response.text
 
-    def _absolute(self, url: str | None) -> str:
-        if not url:
-            return ""
-        return urljoin(self.base_url + "/", html_lib.unescape(url.strip()))
-
-    def parse_sitemap_urls(self, xml: str) -> tuple[list[str], list[str]]:
-        soup = BeautifulSoup(xml, "xml")
-        nested = [
-            self._absolute(loc.get_text(strip=True))
-            for sitemap in soup.find_all("sitemap")
-            for loc in sitemap.find_all("loc")
-        ]
-        nested_set = set(nested)
-        pages = [
-            self._absolute(loc.get_text(strip=True))
-            for loc in soup.find_all("loc")
-            if self._absolute(loc.get_text(strip=True)) not in nested_set
-        ]
-        return nested, pages
-
     def filter_product_urls(self, urls: list[str], section: str | None = None) -> list[str]:
         seen: set[str] = set()
         result: list[str] = []
@@ -174,31 +148,6 @@ class ProfiParser(BaseParser):
             seen.add(url)
             result.append(url)
         return result
-
-    async def collect_product_urls(
-        self,
-        client: httpx.AsyncClient,
-        section: str | None = None,
-    ) -> list[str]:
-        pending = [(self._absolute(SITEMAP_PATH), 0)]
-        collected: list[str] = []
-        visited: set[str] = set()
-        while pending:
-            url, depth = pending.pop(0)
-            if url in visited or depth > MAX_SITEMAP_DEPTH:
-                continue
-            visited.add(url)
-            xml = await self._fetch(client, url)
-            if xml is None:
-                continue
-            try:
-                nested, pages = self.parse_sitemap_urls(xml)
-            except Exception as exc:
-                self.errors.append(f"sitemap parse failed: {url} ({exc})")
-                continue
-            collected.extend(pages)
-            pending.extend((child, depth + 1) for child in nested)
-        return self.filter_product_urls(collected, section)
 
     def parse_product_html(self, html: str, url: str = "") -> ParseResult | None:
         try:
@@ -264,7 +213,7 @@ class ProfiParser(BaseParser):
     def _extract_retail_price(self, soup: BeautifulSoup, block) -> Decimal | None:
         meta = block.select_one("meta[itemprop=price]")
         if meta is not None:
-            price = _safe_price(meta.get("content"))
+            price = safe_price(meta.get("content"))
             if price is not None:
                 return price
         return _price_from_block(
@@ -476,17 +425,6 @@ class ProfiParser(BaseParser):
                 item.raw["city"] = client.city
         return [item for item in parsed if item is not None]
 
-    async def parse_product(self, url: str) -> ParseResult | None:
-        async with self._session() as client:
-            html = await self._fetch(client, url)
-        if html is None:
-            return None
-        try:
-            return self.parse_product_html(html, url)
-        except Exception as exc:
-            self.errors.append(f"parse failed: {url} ({exc})")
-            return None
-
     def build_search_url(self, query: str) -> str:
         return self._absolute(SEARCH_QUERY) + quote(query)
 
@@ -513,10 +451,6 @@ class ProfiParser(BaseParser):
                 -len([part for part in urlparse(url).path.split("/") if part]),
             ),
         )
-
-    async def parse_catalog_batch(self, urls: list[str]) -> list[ParseResult]:
-        async with self._session() as client:
-            return await self._parse_many(client, urls)
 
     async def update_catalog(
         self,

@@ -16,6 +16,7 @@ from src.modules.parser.service.utils import (
     compare_products,
     normalize_name,
     parse_price,
+    safe_price,
     safe_request,
 )
 
@@ -119,3 +120,11 @@ def test_section_filter_rejects_other_sections():
 def test_empty_section_lets_everything_through():
     for empty in (None, "", "   "):
         assert matches_section("https://x.ru/catalog/whatever/", empty)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [("1 234,50 ₽", Decimal("1234.50")), (None, None), ("invalid", None), ("-1", None)],
+)
+def test_safe_price(text, expected):
+    assert safe_price(text) == expected

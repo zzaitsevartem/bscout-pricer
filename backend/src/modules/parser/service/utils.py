@@ -5,7 +5,11 @@ from difflib import SequenceMatcher
 
 import httpx
 
-from src.modules.parser.service.exceptions import ParserConnectionError, ParserParseError
+from src.modules.parser.service.exceptions import (
+    ParserConnectionError,
+    ParserError,
+    ParserParseError,
+)
 
 _WS_RE = re.compile(r"\s+")
 _PUNCT_RE = re.compile(r"[^\w\s]", re.UNICODE)
@@ -41,6 +45,15 @@ def parse_price(text: str | None) -> Decimal:
     if value < 0:
         raise ParserParseError(f"negative price: {text!r}")
     return value
+
+
+def safe_price(text: str | None) -> Decimal | None:
+    if text is None:
+        return None
+    try:
+        return parse_price(text)
+    except ParserError:
+        return None
 
 
 def compare_products(a: str, b: str) -> float:
