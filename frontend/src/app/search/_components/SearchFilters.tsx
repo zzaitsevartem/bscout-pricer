@@ -19,6 +19,7 @@ type FilterGroupProps = {
 
 function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps) {
   const [search, setSearch] = useState('');
+  const [expanded, setExpanded] = useState(false);
   const allOptions = withSelected(options, selectedId);
   const searchable = allOptions.length > 8;
   const visible =
@@ -29,6 +30,10 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
             option.label.toLocaleLowerCase('ru').includes(search.trim().toLocaleLowerCase('ru')),
         )
       : allOptions;
+
+  const shown = expanded || search.trim()
+    ? visible
+    : visible.filter((option, index) => index < 5 || option.id === selectedId);
 
   if (allOptions.length === 0) {
     return null;
@@ -45,11 +50,11 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
           placeholder="Найти…"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="mb-3 w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
+          className="mb-3 w-full rounded-xl p-2 text-slate bg-ivory border border-border-input search-control"
         />
       )}
-      <div className="flex max-h-48 overflow-y-auto flex-col gap-1 pr-1">
-        {visible.map((option) => {
+      <div className="flex flex-col gap-1 pr-1">
+        {shown.map((option) => {
           const selected = option.id === selectedId;
           return (
             <button
@@ -88,6 +93,16 @@ function FilterGroup({ title, options, selectedId, onSelect }: FilterGroupProps)
           );
         })}
       </div>
+      {visible.length > 5 && !search.trim() && (
+        <button
+          type="button"
+          className="mt-2 text-sm text-body-subtle hover:text-slate search-control"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? 'Свернуть список' : 'Показать все'}
+        </button>
+      )}
     </div>
   );
 }
@@ -139,7 +154,7 @@ export function SearchFilters({
           id="catalog-store"
           value={state.store ?? ''}
           onChange={(event) => onFilterChange('store', event.target.value || null)}
-          className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
+          className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input search-control"
         >
           <option value="">Все магазины</option>
           {state.store && !facets.stores?.some((store) => store.slug === state.store) && (
@@ -170,7 +185,7 @@ export function SearchFilters({
               event.target.value === '' ? null : event.target.value === 'true',
             )
           }
-          className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
+          className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input search-control"
         >
           <option value="">Любое наличие</option>
           <option value="true">В наличии</option>
@@ -228,7 +243,7 @@ function PriceRange({
                 const form = event.currentTarget.form;
                 (form?.elements.namedItem('max_price') as HTMLInputElement)?.setCustomValidity('');
               }}
-              className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
+              className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input search-control"
             />
           </label>
           <label className="min-w-0 flex-1 text-[14px] text-body-subtle">
@@ -241,7 +256,7 @@ function PriceRange({
               step="0.01"
               defaultValue={state.max_price}
               onInput={(event) => event.currentTarget.setCustomValidity('')}
-              className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input focus-visible:outline-slate"
+              className="w-full rounded-xl p-2 text-slate bg-ivory border border-border-input search-control"
             />
           </label>
         </div>

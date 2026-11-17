@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import React, { useState, type ReactNode } from 'react';
+import React, { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import type { CatalogSortOption } from '@/models/catalog';
 import { SearchInput } from '@/app/search/_components/SearchInput';
@@ -39,6 +39,59 @@ export function SearchLayout({
   suggestionsEnabled = false,
   deviceMode = false,
 }: SearchLayoutProps) {
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const fitSidebar = () => {
+      const sidebar = sidebarRef.current;
+      const frame = sidebar?.parentElement;
+      if (!sidebar || !frame) return;
+      if (!window.matchMedia?.('(min-width: 1024px)').matches) {
+        sidebar.style.removeProperty('height');
+        sidebar.style.removeProperty('transform');
+        return;
+      }
+      const bounds = frame.getBoundingClientRect();
+      const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 73;
+      const top = Math.max(bounds.top, headerBottom + 8);
+      sidebar.style.height = `${Math.max(0, Math.min(bounds.bottom, window.innerHeight - 32) - top)}px`;
+      sidebar.style.transform = `translateY(${Math.max(0, top - bounds.top)}px)`;
+    };
+    fitSidebar();
+    window.addEventListener('scroll', fitSidebar, { passive: true });
+    window.addEventListener('resize', fitSidebar);
+    const routeWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || !window.matchMedia?.('(min-width: 1024px)').matches) return;
+      const sidebar = sidebarRef.current;
+      const results = resultsRef.current;
+      if (!sidebar || !results) return;
+      const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+      if (event.clientY < headerBottom) return;
+      if (event.clientX >= results.getBoundingClientRect().left) {
+        const canScroll = event.deltaY < 0
+          ? results.scrollTop > 0
+          : results.scrollTop + results.clientHeight < results.scrollHeight - 1;
+        if (canScroll) {
+          event.preventDefault();
+          const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? results.clientHeight : 1;
+          results.scrollTop += event.deltaY * scale;
+        }
+        return;
+      }
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      event.preventDefault();
+      const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? sidebar.clientHeight : 1;
+      sidebar.scrollTop += event.deltaY * scale;
+    };
+    document.addEventListener('wheel', routeWheel, { passive: false, capture: true });
+    return () => {
+      document.removeEventListener('wheel', routeWheel, true);
+      window.removeEventListener('scroll', fitSidebar);
+      window.removeEventListener('resize', fitSidebar);
+    };
+  }, []);
+
   const router = useRouter();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const chips: { key: FilterKey; label: string }[] = [];
@@ -69,36 +122,39 @@ export function SearchLayout({
 
   return (
     <div className="search-palette max-w-[1200px] mx-auto px-6 max-sm:px-4">
-      <div className="grid grid-cols-[264px_1fr] gap-8 py-8 max-sm:gap-6 max-sm:py-6 min-h-[calc(100vh-64px)] max-lg:grid-cols-1 max-lg:content-start">
-        <div className="self-start lg:sticky lg:top-20">
-          <div className="rounded-2xl bg-search-row p-4 lg:bg-transparent lg:p-0">
-            <button
-              type="button"
-              className="flex min-h-11 w-full items-center justify-between rounded-lg font-semibold text-slate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate lg:hidden"
-              aria-expanded={filtersOpen}
-              aria-controls="catalog-filters-panel"
-              onClick={() => setFiltersOpen((open) => !open)}
-            >
-              Фильтры{chips.length > 0 ? ` (${chips.length})` : ''}
-              <span aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
-            </button>
-            <div
-              id="catalog-filters-panel"
-              className={cn('mt-4 lg:mt-0 lg:block', !filtersOpen && 'hidden')}
-            >
-              <SearchFilters
-                facets={deviceMode ? { ...facets, devices: [] } : facets}
-                state={deviceMode ? { ...state, device_id: undefined } : state}
-                onFilterChange={controls.onFilterChange}
-                onPriceChange={controls.onPriceChange}
-                onReset={controls.onReset}
-                hasActiveFilters={chips.length > 0}
-              />
+      <div className="grid grid-cols-[264px_1fr] gap-8 py-8 max-sm:gap-6 max-sm:py-6 min-h-[calc(100vh-64px)] max-lg:grid-cols-1 max-lg:content-start lg:h-[calc(100dvh-73px)] lg:min-h-0 lg:overflow-hidden">
+        <div className="min-w-0 lg:min-h-0">
+          <div ref={sidebarRef} className="self-start lg:h-full lg:overflow-y-auto lg:overscroll-y-contain scrollbar-hidden">
+            <div className="rounded-2xl bg-search-row p-4 lg:bg-transparent lg:p-0">
+              <button
+                type="button"
+                className="flex min-h-11 w-full items-center justify-between rounded-lg font-semibold text-slate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate lg:hidden"
+                aria-expanded={filtersOpen}
+                aria-controls="catalog-filters-panel"
+                onClick={() => setFiltersOpen((open) => !open)}
+              >
+                Фильтры{chips.length > 0 ? ` (${chips.length})` : ''}
+                <span aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
+              </button>
+              <div
+                id="catalog-filters-panel"
+                className={cn('mt-4 lg:mt-0 lg:block', !filtersOpen && 'hidden')}
+              >
+                <SearchFilters
+                  facets={deviceMode ? { ...facets, devices: [] } : facets}
+                  state={deviceMode ? { ...state, device_id: undefined } : state}
+                  onFilterChange={controls.onFilterChange}
+                  onPriceChange={controls.onPriceChange}
+                  onReset={controls.onReset}
+                  hasActiveFilters={chips.length > 0}
+                />
+              </div>
             </div>
           </div>
+
         </div>
 
-        <main className="min-w-0">
+        <main ref={resultsRef} className="min-w-0 lg:min-h-0 lg:overflow-y-auto scrollbar-hidden">
           {!deviceMode && (
             <div className="flex items-center gap-2 text-[14px] text-body-muted mb-4 flex-wrap">
               <Link
@@ -169,7 +225,7 @@ export function SearchLayout({
                     onChange={(event) =>
                       controls.onSortChange(event.target.value as CatalogSortOption)
                     }
-                    className="appearance-none rounded-full pr-9 pl-3 py-2 text-[15px] text-slate bg-ivory border border-border-input transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate"
+                    className="appearance-none rounded-full pr-9 pl-3 py-2 text-[15px] text-slate bg-ivory border border-border-input transition-colors search-control"
                   >
                     {SORT_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>

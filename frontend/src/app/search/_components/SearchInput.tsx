@@ -78,7 +78,7 @@ export function SearchInput({
           filters={filters}
           label="Поиск по модели устройства или запчасти"
           placeholder="Модель устройства, например iPhone 13"
-          inputClassName="w-full rounded-full pl-11 pr-3 py-[10px] text-[15px] text-slate bg-ivory border border-border-input transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate"
+          inputClassName="w-full rounded-full pl-11 pr-3 py-[10px] text-[15px] text-slate bg-ivory border border-border-input transition-colors search-control"
         />
       </div>
       <button type="submit" className="btn-primary max-sm:px-4">

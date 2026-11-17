@@ -93,7 +93,7 @@ const Header: React.FC = () => {
           <Link href="/faq" className="btn-icon rounded-full" aria-label="Частые вопросы" title="Частые вопросы">
             <CircleQuestionMark />
           </Link>
-          <Link href="/search" className="btn-ghost btn-sm gap-2 px-2">
+          <Link href="/search" className="btn btn-sm gap-2 border-0 px-2 text-slate hover:bg-status-success hover:text-status-success-text">
             <SearchIcon width={18} height={18} aria-hidden="true" />
             На страницу поиска
           </Link>
