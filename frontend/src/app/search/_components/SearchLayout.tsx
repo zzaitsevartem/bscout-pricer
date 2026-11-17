@@ -43,6 +43,8 @@ export function SearchLayout({
   const resultsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (deviceMode) return;
+
     const fitSidebar = () => {
       const sidebar = sidebarRef.current;
       const frame = sidebar?.parentElement;
@@ -90,7 +92,7 @@ export function SearchLayout({
       window.removeEventListener('scroll', fitSidebar);
       window.removeEventListener('resize', fitSidebar);
     };
-  }, []);
+  }, [deviceMode]);
 
   const router = useRouter();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -122,9 +124,18 @@ export function SearchLayout({
 
   return (
     <div className="search-palette max-w-[1200px] mx-auto px-6 max-sm:px-4">
-      <div className="grid grid-cols-[264px_1fr] gap-8 py-8 max-sm:gap-6 max-sm:py-6 min-h-[calc(100vh-64px)] max-lg:grid-cols-1 max-lg:content-start lg:h-[calc(100dvh-73px)] lg:min-h-0 lg:overflow-hidden">
+      <div className={cn(
+        'grid grid-cols-[264px_1fr] gap-8 py-8 max-sm:gap-6 max-sm:py-6 min-h-[calc(100vh-64px)] max-lg:grid-cols-1 max-lg:content-start',
+        !deviceMode && 'lg:h-[calc(100dvh-73px)] lg:min-h-0 lg:overflow-hidden',
+      )}>
         <div className="min-w-0 lg:min-h-0">
-          <div ref={sidebarRef} className="self-start lg:h-full lg:overflow-y-auto lg:overscroll-y-contain scrollbar-hidden">
+          <div
+            ref={sidebarRef}
+            className={cn(
+              'self-start scrollbar-hidden',
+              !deviceMode && 'lg:h-full lg:overflow-y-auto lg:overscroll-y-contain',
+            )}
+          >
             <div className="rounded-2xl bg-search-row p-4 lg:bg-transparent lg:p-0">
               <button
                 type="button"
@@ -154,7 +165,13 @@ export function SearchLayout({
 
         </div>
 
-        <main ref={resultsRef} className="min-w-0 lg:min-h-0 lg:overflow-y-auto scrollbar-hidden">
+        <main
+          ref={resultsRef}
+          className={cn(
+            'min-w-0 scrollbar-hidden',
+            !deviceMode && 'lg:min-h-0 lg:overflow-y-auto',
+          )}
+        >
           {!deviceMode && (
             <div className="flex items-center gap-2 text-[14px] text-body-muted mb-4 flex-wrap">
               <Link
