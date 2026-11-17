@@ -114,6 +114,18 @@ it('routes desktop left-side wheel gestures to filters and contains them at the 
   expect(sidebar.scrollTop).toBe(100);
   expect(wheel({ clientX: 800, deltaY: -100 }).defaultPrevented).toBe(true);
   expect(main.scrollTop).toBe(900);
+
+  const footer = document.createElement('footer');
+  document.body.append(footer);
+  vi.spyOn(footer, 'getBoundingClientRect').mockReturnValue({ top: 700 } as DOMRect);
+  vi.stubGlobal('scrollY', 500);
+  const scrollBy = vi.fn();
+  vi.stubGlobal('scrollBy', scrollBy);
+  expect(wheel({ clientX: 800, deltaY: -100 }).defaultPrevented).toBe(true);
+  expect(scrollBy).toHaveBeenCalledWith(0, -100);
+  expect(main.scrollTop).toBe(900);
+  footer.remove();
+
   expect(wheel({ ctrlKey: true }).defaultPrevented).toBe(false);
   expect(sidebar.scrollTop).toBe(100);
   sidebar.scrollTop = 600;

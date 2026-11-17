@@ -70,6 +70,16 @@ export function SearchLayout({
       if (!sidebar || !results) return;
       const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
       if (event.clientY < headerBottom) return;
+      const footer = document.querySelector('footer');
+      if (event.deltaY < 0 && window.scrollY > 0 && footer) {
+        const footerTop = footer.getBoundingClientRect().top;
+        if (footerTop < window.innerHeight) {
+          event.preventDefault();
+          const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+          window.scrollBy(0, event.deltaY * scale);
+          return;
+        }
+      }
       if (event.clientX >= results.getBoundingClientRect().left) {
         const canScroll = event.deltaY < 0
           ? results.scrollTop > 0
