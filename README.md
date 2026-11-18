@@ -97,14 +97,14 @@ docker exec bscout-postgres psql -U bscout -d bscout -c "
 ### Инфраструктура
 
 - 🐳 **Docker Compose** — локальная среда (Postgres + Redis)
-- 📦 **Poetry** — управление зависимостями Python
+- 📦 **pip** — установка Python-зависимостей из `requirements.txt`
 - 📦 **npm** — управление зависимостями JS
 
 ---
 
 ## 📦 Библиотеки и зависимости
 
-### Backend (`backend/pyproject.toml`)
+### Backend (`backend/requirements.txt`; метаданные пакета в `backend/pyproject.toml`)
 
 | Библиотека | Версия | Назначение | Где используется |
 |---|---|---|---|
@@ -145,14 +145,8 @@ docker exec bscout-postgres psql -U bscout -d bscout -c "
 
 | Библиотека | Версия | Назначение | Где используется |
 |---|---|---|---|
-| `@radix-ui/react-navigation-menu` | ^1.2.14 | 🧭 Доступное навигационное меню | `Header` — основная навигация сайта, поддержка клавиатуры и скринридеров |
-| `@radix-ui/react-slot` | ^1.2.4 | 🧩 Композиция компонентов через пропсы | `shadcn/ui` кнопки и ссылки — передача `asChild` для рендеринга как `<a>`, `<button>`, `<Link>` |
-| `@radix-ui/react-visually-hidden` | ^1.2.4 | ♿ Скрытие текста для скринридеров | Доступность: описание иконок и интерактивных элементов для assistive technology |
-| `class-variance-authority` | ^0.7.1 | 🎛️ Управление вариантами стилей компонентов | `shadcn/ui` — варианты кнопок (`default`, `outline`, `ghost`), инпутов, карточек |
 | `clsx` | ^2.1.1 | 🔀 Условная конкатенация CSS-классов | Утилита `cn()` — условные классы: `clsx("base", isActive && "active", className)` |
 | `tailwind-merge` | ^3.6.0 | 🧹 Мерж Tailwind-классов без конфликтов | Утилита `cn()` — предотвращение дублирования (`"px-4 px-8"` → `"px-8"`), переопределение базовых стилей |
-| `embla-carousel-react` | ^8.6.0 | 🎠 Карусель/слайдер изображений | `homeWidget/Carousel` — промо-баннеры, галерея товаров на главной странице |
-| `lucide-react` | ^1.24.0 | 🎭 Набор SVG-иконок | Иконки в UI: стрелки, крестики, иконки навигации, статусов, действий |
 
 #### Dev-зависимости
 
@@ -225,9 +219,12 @@ docker compose -f docker/docker-compose.yml up -d
 ```bash
 cd backend
 cp .env.example .env          # Скопировать шаблон переменных
-poetry install                # Установить зависимости
-poetry run alembic upgrade head  # Применить миграции
-poetry run uvicorn src.main:app --reload  # Запустить сервер
+python3.11 -m venv .venv      # Создать окружение Python 3.11
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+# Для установки backend как пакета вместо запуска из checkout: python -m pip install .
+python -m alembic upgrade head  # Применить миграции
+uvicorn src.main:app --reload   # Запустить сервер
 ```
 
 ### 3. Настроить и запустить Frontend
@@ -267,9 +264,10 @@ npm run format:check # ✨ Проверка форматирования
 
 ```bash
 cd backend
-poetry run uvicorn src.main:app --reload          # 🏃 Dev-сервер на :8000
-poetry run alembic revision --autogenerate -m "msg"  # ➕ Создать миграцию
-poetry run alembic upgrade head                   # ⬆️ Применить мигр��ции
+source .venv/bin/activate
+uvicorn src.main:app --reload                        # 🏃 Dev-сервер на :8000
+python -m alembic revision --autogenerate -m "msg"   # ➕ Создать миграцию
+python -m alembic upgrade head                       # ⬆️ Применить миграции
 ```
 
 ### Docker

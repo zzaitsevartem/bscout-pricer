@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,16 +7,29 @@ from src.modules.auth.model.user import User
 from src.modules.auth.service.auth import decode_token, get_user_by_id
 from src.modules.auth.service.token_service import access_token_is_invalidated
 
-security = HTTPBearer()
 optional_security = HTTPBearer(auto_error=False)
+bearer_scheme = HTTPBearer()
 
 REVOKED_ACCESS_TOKEN_DETAIL = "Access token has been revoked"
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ) -> User:
+    authorization = request.headers.get("Authorization")
+    if authorization is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authenticated",
+        )
+    scheme, separator, token = authorization.partition(" ")
+    if not separator or scheme.lower() != "bearer" or not token:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid authentication credentials",
+        )
+    credentials = HTTPAuthorizationCredentials(scheme=scheme, credentials=token)
     payload = decode_token(credentials.credentials)
     if payload is None or payload.get("type") != "access":
         raise HTTPException(

@@ -14,7 +14,6 @@ from src.modules.parser.service.parsers.bitrix_common import (
     category_from_breadcrumbs,
     clean_text,
     element_id_from,
-    listing_category,
     make_soup,
     merge_stock_status,
     microdata_price,
@@ -48,6 +47,7 @@ class DivizionParser(BitrixParser):
     sitemap_path = "/sitemap.xml"
     search_path = "/catalog/"
     search_param = "q"
+    item_selector = ITEM_SELECTOR
     product_url_markers = ("/catalog/",)
 
     def __init__(self, client: httpx.AsyncClient | None = None):
@@ -58,19 +58,6 @@ class DivizionParser(BitrixParser):
             return False
         parts = [part for part in urlparse(url).path.split("/") if part]
         return len(parts) >= 3 and parts[0] == "catalog"
-
-    def parse_listing(self, markup: str | None, page_url: str = "") -> list[ParseResult]:
-        soup = make_soup(markup)
-        items = soup.select(ITEM_SELECTOR)
-        if not items:
-            return []
-        category = listing_category(soup)
-        results = []
-        for item in items:
-            result = self._item_to_result(item, category)
-            if result is not None:
-                results.append(result)
-        return results
 
     def _item_to_result(self, item: Tag, category: str | None = None) -> ParseResult | None:
         link = item.select_one(ITEM_TITLE_SELECTOR)

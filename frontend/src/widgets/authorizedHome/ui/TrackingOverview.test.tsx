@@ -65,6 +65,8 @@ describe('tracking overview', () => {
     });
     render(<TrackingOverview />);
     expect(screen.getByRole('link', { name: 'Ноль' })).toHaveAttribute('href', '/product/1');
+    expect(screen.getByRole('link', { name: 'Ноль' })).toHaveClass('after:absolute', 'after:inset-0');
+    expect(screen.getByRole('button', { name: /Удалить Ноль/ })).toHaveClass('relative', 'z-10');
     expect(screen.getByText('без изменений')).toHaveClass('text-body-muted');
     expect(screen.getByText('нет данных')).toHaveClass('text-body-muted');
     expect(screen.getByText(/\+10/)).toHaveClass('text-clay');

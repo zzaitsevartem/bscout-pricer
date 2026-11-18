@@ -300,6 +300,7 @@ class BitrixParser(BaseParser):
     search_param = "q"
     product_url_markers: tuple[str, ...] = ()
     catalog_delay = CATALOG_DELAY
+    item_selector = ""
 
     def __init__(
         self,
@@ -358,7 +359,19 @@ class BitrixParser(BaseParser):
         return f"{self.base_url}{self.search_path}?{self.search_param}={quote_plus(query)}"
 
     def parse_listing(self, markup: str | None, page_url: str = "") -> list[ParseResult]:
-        return []
+        if not self.item_selector:
+            return []
+        soup = make_soup(markup)
+        items = soup.select(self.item_selector)
+        if not items:
+            return []
+        category = listing_category(soup)
+        results = []
+        for item in items:
+            result = self._item_to_result(item, category)
+            if result is not None:
+                results.append(result)
+        return results
 
     def parse_card(self, markup: str | None, url: str = "") -> ParseResult | None:
         return None

@@ -13,6 +13,8 @@ def _safe_validation_message(error: dict) -> str:
     if field == "email" and error_type == "value_error":
         return "Enter a valid email address."
     if field in {"password", "new_password", "current_password"}:
+        if "password must not exceed 72 bytes" in str(error.get("ctx", {}).get("error", "")):
+            return "Password must not exceed 72 bytes."
         if error_type == "string_too_short":
             return "Password is too short."
         if error_type == "string_too_long":

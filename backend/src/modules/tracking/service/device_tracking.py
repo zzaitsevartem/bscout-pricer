@@ -1,4 +1,4 @@
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,18 +14,36 @@ from src.modules.tracking.service.alert_service import AlertService
 class DeviceTrackingService:
     @staticmethod
     async def list_for_user(db: AsyncSession, user_id: int) -> list[dict]:
+        counts = (
+            select(Cluster.device_id, func.count(func.distinct(Product.id)).label("total"))
+            .join(Product, Product.cluster_id == Cluster.id)
+            .join(StoreOffer, StoreOffer.product_id == Product.id)
+            .join(Store, Store.id == StoreOffer.store_id)
+            .where(*_offer_conditions())
+            .group_by(Cluster.device_id)
+            .subquery()
+        )
         rows = (
-            await db.execute(
-                select(Device.id, Device.name, Device.model_key, Brand.name.label("brand"))
-                .join(TrackedDevice, TrackedDevice.device_id == Device.id)
-                .join(Brand, Brand.id == Device.brand_id)
-                .where(TrackedDevice.user_id == user_id)
-                .order_by(Device.name)
+            (
+                await db.execute(
+                    select(
+                        Device.id,
+                        Device.name,
+                        Device.model_key,
+                        Brand.name.label("brand"),
+                        func.coalesce(counts.c.total, 0).label("products_count"),
+                    )
+                    .join(TrackedDevice, TrackedDevice.device_id == Device.id)
+                    .join(Brand, Brand.id == Device.brand_id)
+                    .outerjoin(counts, counts.c.device_id == Device.id)
+                    .where(TrackedDevice.user_id == user_id)
+                    .order_by(Device.name)
+                )
             )
-        ).all()
-        return [
-            {"id": r.id, "name": r.name, "model_key": r.model_key, "brand": r.brand} for r in rows
-        ]
+            .mappings()
+            .all()
+        )
+        return [dict(row) for row in rows]
 
     @staticmethod
     async def available(db: AsyncSession, device_id: int):

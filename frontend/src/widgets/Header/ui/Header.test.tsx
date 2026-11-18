@@ -25,3 +25,17 @@ describe('mobile menu', () => {
     expect(panel).toHaveAttribute('aria-hidden', 'true');
   });
 });
+
+it('provides a direct search page link on desktop and in the mobile menu', () => {
+  render(<Header />);
+  expect(screen.getAllByRole('link', { name: 'На страницу поиска', hidden: true }))
+    .toHaveLength(2);
+  for (const link of screen.getAllByRole('link', { name: 'На страницу поиска', hidden: true })) {
+    expect(link).toHaveAttribute('href', '/search');
+  }
+  fireEvent.click(screen.getByRole('button', { name: 'Открыть меню' }));
+  const mobileLink = screen.getAllByRole('link', { name: 'На страницу поиска' })[1];
+  mobileLink.addEventListener('click', (event) => event.preventDefault());
+  fireEvent.click(mobileLink);
+  expect(screen.getByRole('button', { name: 'Открыть меню' })).toBeInTheDocument();
+});

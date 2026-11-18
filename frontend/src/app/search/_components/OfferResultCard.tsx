@@ -39,7 +39,7 @@ export function OfferResultCard({ item }: { item: ProductResponse }) {
   const stock = stockLabel(item.stock_status);
 
   return (
-    <div className="flex gap-4 p-4 items-center rounded-2xl border border-border-input bg-ivory-elevated">
+    <div className="group relative isolate flex items-center gap-4 rounded-2xl border border-border-input bg-ivory p-5 transition-colors hover:border-border-default hover:bg-search-row focus-within:border-border-default max-sm:flex-wrap max-sm:p-4">
       <div className="w-16 h-16 bg-ivory-warm flex items-center justify-center text-body-muted text-xs flex-shrink-0 overflow-hidden">
         {item.image_url ? (
           <Image
@@ -61,7 +61,7 @@ export function OfferResultCard({ item }: { item: ProductResponse }) {
           href={item.url}
           target="_blank"
           rel="noreferrer"
-          className="text-base font-semibold text-slate no-underline block mb-1 hover:underline decoration-brand-green underline-offset-[6px] dark:decoration-current dark:underline-offset-auto"
+          className="mb-1 block text-base font-semibold text-slate no-underline after:absolute after:inset-0 after:rounded-2xl group-hover:underline decoration-brand-green underline-offset-4 focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-slate"
         >
           {item.title}
         </a>
@@ -83,7 +83,7 @@ export function OfferResultCard({ item }: { item: ProductResponse }) {
         </div>
       </div>
 
-      <div className="text-right flex-shrink-0">
+      <div className="flex-shrink-0 text-right max-sm:w-full max-sm:pl-20">
         <div className="text-lg font-bold text-slate">{formatPrice(item.price_retail)}</div>
         {item.price_opt && (
           <div className="text-[14px] text-body-muted">опт {formatPrice(item.price_opt)}</div>

@@ -709,7 +709,7 @@ export function MailingsSection() {
     <section id="mailings">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-2xl font-semibold text-slate mb-0">Рассылки</h3>
+          <h1 className="mb-0 text-[40px] font-semibold text-slate max-sm:text-[32px]">Рассылки</h1>
           <p className="mt-1 text-[14px] text-body-subtle">
             Отправка выполняется фоном через воркер. Прогресс обновляется автоматически.
           </p>

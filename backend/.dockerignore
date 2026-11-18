@@ -23,9 +23,6 @@ tests/
 pytest.ini
 *.md
 
-# Poetry не используется в pip-воркфлоу (lock устарел)
-poetry.lock
-
 # Прочее
 .git/
 .gitignore

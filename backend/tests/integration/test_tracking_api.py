@@ -651,6 +651,8 @@ async def test_device_tracking_baseline_matching_and_entitlements(client, db_ses
         await client.delete(f"/api/tracking/devices/{device_id}", headers=_auth(other))
     ).status_code == 204
     assert len((await client.get("/api/tracking/devices", headers=headers)).json()) == 1
+    before = (await client.get("/api/tracking/devices", headers=headers)).json()[0]
+    assert before["products_count"] == 1
     assert await DeviceTrackingService.scan(db_session) == []
     later = await _make_product(db_session, refs, "later")
     later.cluster_id = None
@@ -661,6 +663,8 @@ async def test_device_tracking_baseline_matching_and_entitlements(client, db_ses
     created = await DeviceTrackingService.scan(db_session)
     assert len(created) == 1 and created[0].product_id == later.id
     assert "iPhone 13" in created[0].body
+    summary = (await client.get("/api/tracking/devices", headers=headers)).json()[0]
+    assert summary["products_count"] == 2
     assert await DeviceTrackingService.scan(db_session) == []
     subscription = (
         await db_session.execute(select(Subscription).where(Subscription.user_id == user.id))

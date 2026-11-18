@@ -1,63 +1,26 @@
 'use client';
 
-import { PageTransition } from '@/shared/ui/PageTransition';
-import React from 'react';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { Header } from '@/widgets/Header/ui/Header';
-import { RequireAdmin } from '@/widgets/RequireAdmin/ui/RequireAdmin';
-import { AdminSidebar } from '@/app/admin/_components/AdminSidebar';
 import { StatsCards } from '@/app/admin/_components/StatsCards';
 import { UsersTable } from '@/app/admin/_components/UsersTable';
-import { ParsersTable } from '@/app/admin/_components/ParsersTable';
-import { MailingsSection } from '@/app/admin/_components/MailingsSection';
-import { OfferImportSection } from '@/app/admin/_components/OfferImportSection';
-import { ModerationSection } from '@/app/admin/_components/ModerationSection';
 
-function AdminDashboard() {
+export default function AdminPage() {
   const queryClient = useQueryClient();
   const fetching = useIsFetching({ queryKey: ['admin'] });
 
   return (
-    <PageTransition className="flex min-h-[calc(100vh-64px)]">
-      <AdminSidebar />
-
-      <main id="dashboard" className="flex-1 p-8 overflow-x-hidden max-lg:p-6 max-md:p-4">
-        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <div>
-            <h2 className="text-[40px] font-semibold text-slate mb-1" style={{ marginBottom: '4px' }}>Дашборд</h2>
-            <p className="text-[15px] text-body-subtle mb-0">Сводка по системе</p>
-          </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['admin'] })}
-              disabled={fetching > 0}
-              className="btn-primary btn-sm disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {fetching > 0 ? 'Обновление…' : 'Обновить'}
-            </button>
-          </div>
+    <div id="dashboard">
+      <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="mb-1 text-[40px] font-semibold text-slate max-sm:text-[32px]">Дашборд</h1>
+          <p className="mb-0 text-base text-body-subtle">Сводка по системе</p>
         </div>
-
-        <StatsCards />
-        <UsersTable />
-        <ModerationSection />
-        <OfferImportSection />
-        <ParsersTable />
-        <MailingsSection />
-      </main>
-    </PageTransition>
-  );
-}
-
-export default function AdminPage() {
-  return (
-    <>
-      <Header />
-
-      <RequireAdmin>
-        <AdminDashboard />
-      </RequireAdmin>
-    </>
+        <button type="button" onClick={() => queryClient.invalidateQueries({ queryKey: ['admin'] })} disabled={fetching > 0} className="btn-primary btn-sm min-h-11 disabled:cursor-not-allowed disabled:opacity-60">
+          {fetching > 0 ? 'Обновление…' : 'Обновить'}
+        </button>
+      </div>
+      <StatsCards />
+      <UsersTable preview />
+    </div>
   );
 }

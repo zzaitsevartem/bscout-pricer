@@ -19,9 +19,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Не используется в npm-воркфлоу (в репозитории лежит лишний lock)
-pnpm-lock.yaml
-
 # Исходники макетов и документация в образе не нужны
 img/
 mockups3/

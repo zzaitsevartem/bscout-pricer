@@ -359,3 +359,18 @@
     animation: none;
   }
 }
+
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .search-control:focus {
+    outline: 2px solid var(--color-success-border);
+    outline-offset: -2px;
+  }
+}

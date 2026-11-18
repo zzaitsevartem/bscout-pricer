@@ -79,5 +79,6 @@ export const trackedDeviceSchema = z.object({
   name: z.string(),
   model_key: z.string(),
   brand: z.string(),
+  products_count: z.number(),
 });
 export type TrackedDevice = z.infer<typeof trackedDeviceSchema>;

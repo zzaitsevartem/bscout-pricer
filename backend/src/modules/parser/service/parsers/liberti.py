@@ -11,7 +11,6 @@ from src.modules.parser.service.parsers.bitrix_common import (
     category_from_breadcrumbs,
     clean_text,
     extract_labeled_prices,
-    listing_category,
     make_soup,
     merge_stock_status,
     microdata_price,
@@ -50,23 +49,11 @@ class LibertiParser(BitrixParser):
     sitemap_path = "/sitemap_index.xml"
     search_path = "/search/"
     search_param = "q"
+    item_selector = ITEM_SELECTOR
     product_url_markers = (".html",)
 
     def __init__(self, client: httpx.AsyncClient | None = None):
         super().__init__(STORE_SLUG, STORE_NAME, BASE_URL, client=client)
-
-    def parse_listing(self, markup: str | None, page_url: str = "") -> list[ParseResult]:
-        soup = make_soup(markup)
-        items = soup.select(ITEM_SELECTOR)
-        if not items:
-            return []
-        category = listing_category(soup)
-        results = []
-        for item in items:
-            result = self._item_to_result(item, category)
-            if result is not None:
-                results.append(result)
-        return results
 
     def _item_to_result(self, item: Tag, category: str | None) -> ParseResult | None:
         link = item.select_one(ITEM_NAME_SELECTOR)

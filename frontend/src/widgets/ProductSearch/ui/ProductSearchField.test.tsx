@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
 import { HeaderSearch } from '@/widgets/Header/ui/HeaderSearch';
 import { AuthorizedHero } from '@/widgets/authorizedHome/ui/AuthorizedHero';
 import { ProductSearchField } from '@/widgets/ProductSearch/ui/ProductSearchField';
@@ -198,13 +199,13 @@ describe('shared product search entry points', () => {
     expect(push).toHaveBeenCalledWith(`/search?q=${encodeURIComponent('Дисплей Nokia 5700')}`);
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
-  it('keeps the header submit callback and clear action', () => {
+  it('keeps the header submit callback and clear action', async () => {
     query.mockReturnValue({ data: [] });
     const onSubmitted = vi.fn();
     render(<HeaderSearch onSubmitted={onSubmitted} />);
     const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'Nokia' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Найти' }));
+    await userEvent.setup().type(input, '{Enter}');
     expect(onSubmitted).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledWith('/search?q=Nokia');
     fireEvent.click(screen.getByRole('button', { name: 'Очистить поиск' }));

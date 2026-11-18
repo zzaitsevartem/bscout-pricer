@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { CatalogItemResponse } from '@/models/catalog';
 import { CatalogResultCard } from './CatalogResultCard';
 
-vi.mock('@/widgets/TrackButton/ui/TrackButton', () => ({ TrackButton: () => null }));
+const track = vi.fn();
+vi.mock('@/widgets/TrackButton/ui/TrackButton', () => ({ TrackButton: () => <button onClick={track}>Отслеживать</button> }));
 
 const item: CatalogItemResponse = {
   id: 1, canonical_key: 'product', canonical_name: 'Дисплей', cluster_id: null,
@@ -52,4 +53,18 @@ describe('CatalogResultCard', () => {
     expect(screen.queryByText('Наличие неизвестно')).not.toBeInTheDocument();
     expect(screen.queryByText('Нет в наличии')).not.toBeInTheDocument();
   });
+});
+
+it('keeps catalog, source, and tracking actions independent and keyboard reachable', () => {
+  render(<CatalogResultCard item={item} />);
+  const primary = screen.getByRole('link', { name: 'Дисплей' });
+  const source = screen.getByRole('link', { name: /Магазин/ });
+  const button = screen.getByRole('button', { name: 'Отслеживать' });
+  expect(primary).toHaveAttribute('href', '/product/1');
+  expect(primary).not.toContainElement(source);
+  expect(primary).not.toContainElement(button);
+  primary.focus();
+  expect(primary).toHaveFocus();
+  fireEvent.click(button);
+  expect(track).toHaveBeenCalledOnce();
 });
