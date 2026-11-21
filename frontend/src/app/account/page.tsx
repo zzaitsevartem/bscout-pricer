@@ -55,7 +55,7 @@ function AccountContent() {
                         <span className="inline-flex items-center rounded-full px-4 py-[6px] text-[14px] font-semibold bg-green-discount text-white border border-transparent">{planLabel(subscription.data.plan)}</span>
                         <span className="text-[12px] text-body-muted">Активна до {formatDate(subscription.data.end_date)}</span>
                       </div>
-                      <p className="text-[15px] text-body-subtle mt-2 mb-0">{subscription.data.auto_renew ? 'Автопродление включено' : 'Автопродление выключено'}</p>
+                      <p className="text-[15px] text-body-subtle mt-2 mb-0">Продление вручную</p>
                     </div>
                     <Link href="/subscription" className="btn-secondary btn-sm">Управлять</Link>
                   </>

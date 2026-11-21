@@ -65,6 +65,7 @@ def _audience_query(audience: BroadcastAudience):
             .join(Subscription, Subscription.user_id == User.id)
             .where(
                 Subscription.is_active.is_(True),
+                Subscription.start_date <= _now(),
                 Subscription.end_date > _now(),
                 User.is_active.is_(True),
             )

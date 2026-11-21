@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -109,5 +109,31 @@ describe('SubscriptionPage tracking usage', () => {
     renderPage();
 
     expect(await screen.findByText('Отслеживаемых товаров: 10 из 10')).toBeInTheDocument();
+  });
+});
+
+describe('manual subscription payments', () => {
+  it('shows expiration and manual renewal even for legacy auto renew data', async () => {
+    mockApi({ used: 1, limit: 10, remaining: 9 });
+    renderPage();
+    expect(await screen.findByText(/Продление вручную/)).toBeInTheDocument();
+    expect(screen.queryByText(/Автопродление включено/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Продлить вручную' })).toBeInTheDocument();
+  });
+
+  it('shows a server quote before creating a payment', async () => {
+    mockApi({ used: 1, limit: 10, remaining: 9 });
+    const create = vi.fn(() => HttpResponse.json({}, { status: 503 }));
+    server.use(
+      http.get('*/api/payment/quote', () => HttpResponse.json({ amount: '49.50', starts_at: null, ends_at: '2026-11-01' })),
+      http.post('*/api/payment/subscribe', create),
+    );
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'Продлить вручную' }));
+    expect(await screen.findByText(/К оплате 49,50 ₽/)).toBeInTheDocument();
+    expect(create).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Подтвердить оплату' }));
+    await screen.findByText('Не удалось создать платёж. Попробуйте позже.');
+    expect(create).toHaveBeenCalledTimes(1);
   });
 });

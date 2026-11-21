@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_db
 from src.middleware.subscription_guard import get_active_subscription
-from src.modules.auth.model.user import User
+from src.modules.auth.model.user import Subscription, User
 from src.modules.auth.schema.user import (
     SubscriptionCreateRequest,
     SubscriptionResponse,
@@ -90,7 +91,21 @@ async def get_my_subscription(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No active subscription found",
         )
-    return subscription
+    scheduled = await db.scalar(
+        select(Subscription)
+        .where(
+            Subscription.user_id == current_user.id,
+            Subscription.is_active.is_(True),
+            Subscription.start_date >= subscription.end_date,
+        )
+        .order_by(Subscription.start_date, Subscription.id)
+        .limit(1)
+    )
+    response = SubscriptionResponse.model_validate(subscription)
+    if scheduled:
+        response.next_plan = scheduled.plan
+        response.next_start_date = scheduled.start_date
+    return response
 
 
 @router.post(

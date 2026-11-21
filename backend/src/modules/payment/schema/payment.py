@@ -11,6 +11,13 @@ class PaymentCreateRequest(BaseModel):
     plan: PlanEnum
     payment_method: str = Field(default="card", max_length=50)
     idempotence_key: str | None = Field(default=None, max_length=128)
+    expected_amount: Decimal | None = Field(default=None, gt=0, max_digits=12, decimal_places=2)
+
+
+class PaymentQuote(BaseModel):
+    amount: Decimal
+    starts_at: datetime | None = None
+    ends_at: datetime | None = None
 
 
 class PaymentResponse(BaseModel):

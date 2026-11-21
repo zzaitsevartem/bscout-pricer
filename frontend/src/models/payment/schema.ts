@@ -85,6 +85,7 @@ export const paymentCreateRequestSchema = z.object({
   plan: planEnumSchema,
   payment_method: z.string().max(50).default('card'),
   idempotence_key: z.string().max(128).optional(),
+  expected_amount: z.number().optional(),
 });
 
 export const subscriptionUpgradeRequestSchema = z.object({
@@ -97,3 +98,9 @@ export type PaymentResponse = z.infer<typeof paymentSchema>;
 export type SubscriptionCancelResponse = z.infer<typeof subscriptionCancelResponseSchema>;
 export type PaymentCreateRequest = z.input<typeof paymentCreateRequestSchema>;
 export type SubscriptionUpgradeRequest = z.infer<typeof subscriptionUpgradeRequestSchema>;
+
+export const paymentQuoteSchema = z.object({
+  amount: z.coerce.number(),
+  starts_at: z.string().nullable(),
+  ends_at: z.string().nullable(),
+});

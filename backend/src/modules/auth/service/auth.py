@@ -131,7 +131,8 @@ async def has_active_subscription(db: AsyncSession, user_id: int) -> bool:
         .where(
             Subscription.user_id == user_id,
             Subscription.is_active.is_(True),
-            Subscription.end_date > func.now(),
+            Subscription.start_date <= func.statement_timestamp(),
+            Subscription.end_date > func.statement_timestamp(),
         )
         .limit(1)
     )

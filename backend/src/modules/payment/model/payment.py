@@ -28,6 +28,7 @@ class Payment(Base):
         ForeignKey("subscriptions.id", ondelete="SET NULL"), nullable=True, index=True
     )
     plan: Mapped[PlanEnum] = mapped_column(plan_enum, nullable=False)
+    upgrade_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), default="RUB", nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="pending", nullable=False, index=True)
