@@ -1,7 +1,7 @@
 'use client';
 
 import { PageTransition } from '@/shared/ui/PageTransition';
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/widgets/Header/ui/Header';
@@ -10,7 +10,8 @@ import { AccountSidebar } from '@/widgets/AccountSidebar/ui/AccountSidebar';
 import { TariffPlans } from '@/widgets/TariffPlans';
 import { RequireAuth } from '@/shared/lib/RequireAuth';
 import { useSubscription } from '@/models/user';
-import { usePaymentHistory, usePlans, useSubscribe, useCancelSubscription } from '@/models/payment';
+import { usePaymentHistory, usePlans, useSubscribe } from '@/models/payment';
+import { paymentApi } from '@/models/payment/service';
 import { useTrackingUsage } from '@/models/tracking';
 import type { PaymentResponse } from '@/models/payment';
 import type { Plan } from '@/models/user';
@@ -49,13 +50,16 @@ function statusLabel(status: string): string {
   return STATUS_LABELS[status] ?? status;
 }
 
-function PendingPaymentNotice({ payment }: { payment: PaymentResponse }) {
+function PendingPaymentNotice({
+  payment,
+  canRecoverLink,
+}: { payment: PaymentResponse; canRecoverLink: boolean }) {
   return (
     <div className="rounded-[24px] p-[31px] bg-ivory-warm mb-8">
       <h4 className="text-xl font-semibold text-clay-ember mb-2">Платёж ожидает подтверждения</h4>
       <p className="text-[15px] text-body mb-2">
-        Счёт №{payment.id} на {formatAmount(payment.amount)} ₽ создан. Подписка станет активной только
-        после подтверждения оплаты — прямо сейчас тариф ещё не подключён.
+        Счёт №{payment.id} на {formatAmount(payment.amount)} ₽ создан. Оплата будет учтена после
+        подтверждения.
       </p>
       {payment.confirmationUrl ? (
         <a
@@ -68,8 +72,8 @@ function PendingPaymentNotice({ payment }: { payment: PaymentResponse }) {
         </a>
       ) : (
         <p className="text-[14px] text-body-subtle mb-0">
-          Ссылка на оплату пока не выдана платёжным провайдером. Мы подтвердим платёж и активируем
-          тариф вручную.
+          {canRecoverLink ? 'Ссылка на оплату пока не выдана. Повторите получение ссылки для этой попытки.'
+            : <>Статус оплаты уточняется. Для проверки счёта <Link href="/contacts">обратитесь в поддержку</Link>.</>}
         </p>
       )}
     </div>
@@ -84,27 +88,39 @@ function SubscriptionContent() {
   const plans = usePlans();
   const history = usePaymentHistory();
   const subscribe = useSubscribe();
-  const cancel = useCancelSubscription();
+  const [quote, setQuote] = useState<{ plan: Plan; amount: number; starts_at: string | null; ends_at: string | null } | null>(null);
+  const [quoting, setQuoting] = useState(false);
+  const [quoteError, setQuoteError] = useState(false);
   const trackingUsage = useTrackingUsage();
 
   const currentPlan = subscription.data?.plan;
   const currentPlanDefinition = plans.data?.find((item) => item.plan === currentPlan);
-  const pendingPayment =
-    subscribe.data?.status === 'pending'
-      ? subscribe.data
-      : history.data?.find((payment) => payment.status === 'pending');
+  const pendingPayment = history.data
+    ? history.data.find((payment) => payment.status === 'pending')
+    : subscribe.data?.status === 'pending' ? subscribe.data : undefined;
+  const canRecoverLink = Boolean(
+    pendingPayment && !pendingPayment.confirmationUrl
+    && Date.now() - Date.parse(pendingPayment.createdAt) < 24 * 60 * 60 * 1000,
+  );
 
-  const handleSubscribe = (plan: Plan) => {
-    subscribe.mutate({ plan, payment_method: 'card' });
-  };
-
-  const handleCancel = () => {
-    if (
-      window.confirm(
-        'Отключить автопродление? Доступ сохранится до конца уже оплаченного периода.',
-      )
-    ) {
-      cancel.mutate();
+  const handleSubscribe = async (plan: Plan) => {
+    if (subscribe.isPending || quoting) return;
+    if (pendingPayment) {
+      if (canRecoverLink && pendingPayment.plan === plan) {
+        subscribe.mutate({ plan, payment_method: 'card' });
+      }
+      return;
+    }
+    setQuoting(true);
+    setQuoteError(false);
+    setQuote(null);
+    try {
+      const result = await paymentApi.quote(plan);
+      setQuote({ ...result, plan });
+    } catch {
+      setQuoteError(true);
+    } finally {
+      setQuoting(false);
     }
   };
 
@@ -138,8 +154,13 @@ function SubscriptionContent() {
                         )}
                       </div>
                       <p className="text-[15px] text-body-subtle mt-2 mb-0">
-                        Действует до {formatDate(subscription.data.end_date)} · {subscription.data.auto_renew ? 'Автопродление включено' : 'Автопродление выключено'}
+                        Действует до {formatDate(subscription.data.end_date)} · Продление вручную
                       </p>
+                      {subscription.data.next_plan && subscription.data.next_start_date && (
+                        <p className="text-[15px] text-body-subtle mt-2 mb-0">
+                          Тариф «{planLabel(subscription.data.next_plan)}» начнётся {formatDate(subscription.data.next_start_date)}.
+                        </p>
+                      )}
                       {trackingUsage.data && (
                         <p className="text-[14px] text-body-subtle mt-2 mb-0">
                           Отслеживаемых товаров: {trackingUsage.data.used} из {trackingUsage.data.limit}
@@ -159,15 +180,7 @@ function SubscriptionContent() {
                 )}
               </div>
 
-              {pendingPayment && <PendingPaymentNotice payment={pendingPayment} />}
-
-              {cancel.isSuccess && cancel.data && (
-                <div className="rounded-[24px] p-[31px] bg-ivory-elevated mb-8">
-                  <p className="text-[15px] text-body mb-0">
-                    {cancel.data.detail} Доступ сохраняется до {formatDate(cancel.data.accessUntil)}.
-                  </p>
-                </div>
-              )}
+              {pendingPayment && <PendingPaymentNotice payment={pendingPayment} canRecoverLink={canRecoverLink} />}
 
               <h3 className="text-2xl font-semibold text-slate mb-4">{currentPlan ? 'Сменить тариф' : 'Выбрать тариф'}</h3>
 
@@ -196,11 +209,22 @@ function SubscriptionContent() {
                   <TariffPlans
                     onSelect={handleSubscribe}
                     selectedPlan={subscribe.isPending ? subscribe.variables?.plan : selectedPlan}
-                    subscribing={subscribe.isPending}
+                    subscribing={subscribe.isPending || quoting || Boolean(pendingPayment)}
                   />
                 </div>
               )}
 
+              {pendingPayment && canRecoverLink && (
+                <button className="btn btn-secondary btn-sm" disabled={subscribe.isPending} onClick={() => handleSubscribe(pendingPayment.plan)}>Повторить получение ссылки</button>
+              )}
+              {quoteError && <p role="alert">Не удалось рассчитать стоимость. Попробуйте ещё раз.</p>}
+              {quote && !pendingPayment && (
+                <section aria-label="Подтверждение оплаты" className="rounded-[24px] p-6 bg-ivory-elevated mb-8">
+                  <p>Тариф «{planLabel(quote.plan)}». К оплате {formatAmount(quote.amount)} ₽.</p>
+                  <p>{quote.starts_at ? `Начало периода ${formatDate(quote.starts_at)}.` : 'Начало после подтверждения оплаты.'} {quote.ends_at && `Действует до ${formatDate(quote.ends_at)}.`}</p>
+                  <button className="btn btn-primary btn-sm" disabled={subscribe.isPending} onClick={() => subscribe.mutate({ plan: quote.plan, payment_method: 'card', expected_amount: quote.amount }, { onSuccess: () => setQuote(null) })}>Подтвердить оплату</button>
+                </section>
+              )}
               <h3 className="text-2xl font-semibold text-slate mb-4">История платежей</h3>
 
               <div className="rounded-[24px] p-[31px] bg-ivory-elevated mb-8">
@@ -236,20 +260,10 @@ function SubscriptionContent() {
                 )}
               </div>
 
-              {subscription.data && (
-                <div className="rounded-[24px] p-[31px] bg-ivory-warm mt-12">
-                  <h4 className="text-xl font-semibold text-clay-ember mb-2">Отмена подписки</h4>
-                  <p className="text-[15px] text-body-subtle">
-                    Отмена отключает автопродление. Доступ к тарифу сохраняется до конца уже оплаченного
-                    периода — до {formatDate(subscription.data.end_date)}.
-                  </p>
-                  {cancel.isError && (
-                    <p className="text-[14px] text-clay mt-2">Не удалось отменить подписку</p>
-                  )}
-                  <button onClick={handleCancel} disabled={cancel.isPending} className="btn-danger btn-sm mt-4 disabled:opacity-60">
-                    {cancel.isPending ? 'Отменяем…' : 'Отменить подписку'}
-                  </button>
-                </div>
+              {subscription.data && subscription.data.plan !== 'trial' && (
+                <button className="btn btn-primary btn-sm" disabled={subscribe.isPending || Boolean(pendingPayment)} onClick={() => handleSubscribe(subscription.data!.plan)}>
+                  Продлить вручную
+                </button>
               )}
 
               <p className="text-center text-[14px] text-body-muted mt-8">

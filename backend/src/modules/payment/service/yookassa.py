@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from decimal import Decimal
 
 import httpx
@@ -8,9 +9,14 @@ from src.config import settings
 YOOKASSA_API_URL = "https://api.yookassa.ru/v3/payments"
 YOOKASSA_PROVIDER = "yookassa"
 REQUEST_TIMEOUT = 10.0
+IDEMPOTENCE_WINDOW = timedelta(hours=24)
 
 
 class YooKassaError(RuntimeError):
+    pass
+
+
+class YooKassaPaymentRejected(YooKassaError):
     pass
 
 
@@ -62,6 +68,10 @@ async def create_payment(
             )
         except httpx.HTTPError as exc:
             raise YooKassaError(f"payment provider request failed: {exc}") from exc
+        if response.status_code in (400, 401, 403, 404, 422):
+            raise YooKassaPaymentRejected(
+                f"payment provider rejected request: {response.status_code}"
+            )
         if response.status_code >= 400:
             raise YooKassaError(f"payment provider rejected request: {response.status_code}")
         try:

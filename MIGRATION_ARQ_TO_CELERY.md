@@ -92,8 +92,7 @@ docker compose up -d --build worker beat flower
 
 ## Замечания
 
-- `backend/poetry.lock` содержит устаревшие записи (arq). Файл не используется
-  (воркфлоу — pip), poetry в окружении нет; обновить при возврате к poetry.
+- Backend использует pip и `requirements.txt`; Poetry lock-файл удалён как устаревший.
 - `docs/audit/audit.md`, `docs/sprints/sprint-001-backend-api.md` — исторические
   документы планирования с упоминаниями arq; не переписывались.
 - Крон-расписания переехали в `beat` 1:1 (03:00 каталог, 07:30/13:30/19:30 цены,

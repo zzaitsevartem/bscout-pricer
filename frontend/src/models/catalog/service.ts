@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { api } from '@/shared/api/axios';
+import { createContractChecker } from '@/shared/lib/check-contract';
 import {
   deviceSuggestionSchema,
   catalogListResponseSchema,
@@ -18,22 +19,23 @@ import type {
   ProductPriceHistoryResponse,
 } from './schema';
 
-function checkContract(schema: z.ZodType, data: unknown, source: string): void {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-  const result = schema.safeParse(data);
-  if (!result.success) {
-    console.warn(`[models/catalog] ${source}: response does not match schema`, result.error.issues);
-  }
-}
+const checkContract = createContractChecker('models/catalog');
 
 export const catalogApi = {
   devices: (params: { q: string; limit?: number }, signal?: AbortSignal) =>
-    api.get<z.infer<typeof deviceSuggestionSchema>[]>('/products/catalog/devices', { params, signal }).then((response) => {
-      checkContract(z.array(deviceSuggestionSchema), response.data, 'GET /products/catalog/devices');
-      return response;
-    }),
+    api
+      .get<z.infer<typeof deviceSuggestionSchema>[]>('/products/catalog/devices', {
+        params,
+        signal,
+      })
+      .then((response) => {
+        checkContract(
+          z.array(deviceSuggestionSchema),
+          response.data,
+          'GET /products/catalog/devices',
+        );
+        return response;
+      }),
   facets: (params: CatalogSearchParams) =>
     api.get<CatalogFacetsResponse>('/products/catalog/facets', { params }).then((response) => {
       checkContract(catalogFacetsSchema, response.data, 'GET /products/catalog/facets');

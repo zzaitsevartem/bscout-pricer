@@ -51,3 +51,12 @@ describe('OfferResultCard', () => {
     expect(screen.queryByText('Либерти')).not.toBeInTheDocument();
   });
 });
+
+it('exposes the supplier link as a keyboard-focusable primary action', () => {
+  render(<OfferResultCard item={offer} />);
+  const link = screen.getByRole('link', { name: offer.title });
+  link.focus();
+  expect(link).toHaveFocus();
+  expect(link).toHaveAttribute('target', '_blank');
+  expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+});

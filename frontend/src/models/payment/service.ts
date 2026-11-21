@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { api } from '@/shared/api/axios';
 import {
+  paymentQuoteSchema,
   paymentListSchema,
   paymentSchema,
   planListSchema,
@@ -20,6 +21,9 @@ function parseResponse<T>(schema: z.ZodType<T>, data: unknown, source: string): 
 }
 
 export const paymentApi = {
+  quote: (plan: PaymentCreateRequest['plan']) => api.get('/payment/quote', { params: { plan } })
+    .then((response) => parseResponse(paymentQuoteSchema, response.data, 'GET /payment/quote')),
+
   getPlans: () =>
     api
       .get('/payment/plans')

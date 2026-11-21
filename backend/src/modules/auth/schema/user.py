@@ -51,6 +51,8 @@ class SubscriptionResponse(BaseModel):
     end_date: datetime
     is_active: bool
     auto_renew: bool
+    next_plan: PlanEnum | None = None
+    next_start_date: datetime | None = None
 
     model_config = {"from_attributes": True}
 

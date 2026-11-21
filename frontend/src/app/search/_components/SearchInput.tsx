@@ -55,7 +55,7 @@ export function SearchInput({
 
   return (
     <form
-      className="flex gap-3 mb-6"
+      className="flex gap-3 mb-6 max-sm:gap-2"
       onSubmit={(event) => {
         event.preventDefault();
         committed.current = text;
@@ -78,10 +78,10 @@ export function SearchInput({
           filters={filters}
           label="Поиск по модели устройства или запчасти"
           placeholder="Модель устройства, например iPhone 13"
-          inputClassName="w-full rounded-full pl-11 pr-3 py-[10px] text-[15px] text-slate bg-ivory border border-border-input transition-colors focus:outline-none focus:border-border-default"
+          inputClassName="w-full rounded-full pl-11 pr-3 py-[10px] text-[15px] text-slate bg-ivory border border-border-input transition-colors search-control"
         />
       </div>
-      <button type="submit" className="btn-primary">
+      <button type="submit" className="btn-primary max-sm:px-4">
         Найти
       </button>
     </form>

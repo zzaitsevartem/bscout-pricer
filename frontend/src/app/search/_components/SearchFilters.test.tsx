@@ -90,3 +90,27 @@ describe('long device filters', () => {
     expect(onFilterChange).toHaveBeenCalledWith('device_id', 30);
   });
 });
+
+it('keeps long lists compact and searches options beyond the initial preview', () => {
+  render(
+    <SearchFilters
+      facets={{ ...facets, devices: Array.from({ length: 12 }, (_, index) => ({
+        id: index + 1, label: `Модель ${index + 1}`,
+      })) }}
+      state={state}
+      onFilterChange={vi.fn()}
+      onPriceChange={vi.fn()}
+      onReset={vi.fn()}
+      hasActiveFilters={false}
+    />,
+  );
+  expect(screen.queryByRole('button', { name: 'Модель 12' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Показать все' }));
+  expect(screen.getByRole('button', { name: 'Модель 12' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Свернуть список' }));
+  fireEvent.change(screen.getByRole('searchbox', { name: 'Найти: устройство' }), {
+    target: { value: 'Модель 12' },
+  });
+  expect(screen.getByRole('button', { name: 'Модель 12' })).toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: 'Магазин' })).toBeInTheDocument();
+});

@@ -1,17 +1,9 @@
-import { z } from 'zod';
 import { api } from '@/shared/api/axios';
+import { createContractChecker } from '@/shared/lib/check-contract';
 import { searchHistoryListResponseSchema } from './schema';
 import type { SearchHistoryResponse } from './schema';
 
-function checkContract(schema: z.ZodType, data: unknown, source: string): void {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-  const result = schema.safeParse(data);
-  if (!result.success) {
-    console.warn(`[models/search] ${source}: response does not match schema`, result.error.issues);
-  }
-}
+const checkContract = createContractChecker('models/search');
 
 export const searchApi = {
   clearHistory: () => api.delete<void>('/search/history'),

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -5,7 +6,9 @@ from decimal import Decimal
 import httpx
 import pytest
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from src.database import get_db
 from src.modules.auth.model.user import PlanEnum, Subscription, User
 from src.modules.auth.service.auth import create_access_token
 from src.modules.payment.model.payment import Payment
@@ -429,11 +432,14 @@ async def test_history_returns_only_own_payments(client, db_session):
     user = await _make_user(db_session, "history@example.com")
     stranger = await _make_user(db_session, "history-other@example.com")
 
-    await client.post(
+    first = await client.post(
         "/api/payment/subscribe",
         json={"plan": "basic", "idempotence_key": "h1"},
         headers=_auth(user),
     )
+    assert first.status_code == 201
+    first_payment = await _get_payment(db_session, first.json()["id"])
+    await PaymentService.mark_status(db_session, first_payment, "canceled")
     await client.post(
         "/api/payment/subscribe",
         json={"plan": "advanced", "idempotence_key": "h2"},
@@ -448,7 +454,7 @@ async def test_history_returns_only_own_payments(client, db_session):
     assert len(body) == 2
     assert {item["user_id"] for item in body} == {user.id}
     assert {item["plan"] for item in body} == {"basic", "advanced"}
-    assert all(item["status"] == "pending" for item in body)
+    assert {item["status"] for item in body} == {"canceled", "pending"}
 
 
 async def test_history_requires_authentication(client):
@@ -539,3 +545,243 @@ async def test_subscribe_creates_provider_payment_when_configured(client, db_ses
     assert amounts == [{"value": "319.00", "currency": "RUB"}]
     assert body["provider_payment_id"] == "yk-int-1"
     assert body["confirmation_url"] == "https://pay.example/x"
+
+
+async def test_parallel_checkout_and_webhooks_use_one_payment_and_period(
+    db_engine, db_session, monkeypatch
+):
+    from src.main import app
+
+    _provider_env(monkeypatch)
+    factory = async_sessionmaker(db_engine, expire_on_commit=False)
+    user = await _make_user(db_session, "parallel-payment@example.com")
+    await db_session.commit()
+    all_notifications_read = asyncio.Event()
+    provider_reads = 0
+    provider_creates = 0
+
+    async def provider(request: httpx.Request) -> httpx.Response:
+        nonlocal provider_reads, provider_creates
+        if request.method == "POST":
+            provider_creates += 1
+            return httpx.Response(
+                200,
+                json={
+                    "id": "yk-test-1",
+                    "confirmation": {"confirmation_url": "https://pay.example/x"},
+                },
+            )
+        provider_reads += 1
+        if provider_reads == 4:
+            all_notifications_read.set()
+        await asyncio.wait_for(all_notifications_read.wait(), timeout=10)
+        return httpx.Response(200, json=_remote_object("succeeded", True))
+
+    async def override():
+        async with factory() as session:
+            yield session
+
+    monkeypatch.setattr(
+        yookassa_module,
+        "_client_factory",
+        lambda: httpx.AsyncClient(transport=httpx.MockTransport(provider)),
+    )
+    monkeypatch.setitem(app.dependency_overrides, get_db, override)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as api:
+        checkouts = await asyncio.gather(
+            *(
+                api.post("/api/payment/subscribe", json={"plan": "basic"}, headers=_auth(user))
+                for _ in range(4)
+            )
+        )
+        assert sorted(response.status_code for response in checkouts) == [200, 200, 200, 201]
+        assert len({response.json()["id"] for response in checkouts}) == 1
+        assert provider_creates == 1
+        notifications = await asyncio.gather(
+            *(
+                api.post("/api/payment/webhook", json={"object": {"id": "yk-test-1"}})
+                for _ in range(4)
+            )
+        )
+
+    assert [response.status_code for response in notifications] == [200] * 4
+    assert sorted(response.json()["detail"] for response in notifications) == [
+        "already applied",
+        "already applied",
+        "already applied",
+        "applied",
+    ]
+    assert await _count_payments(db_session, user.id) == 1
+    assert await _count_subscriptions(db_session, user.id) == 1
+    payment = await _get_payment(db_session, checkouts[0].json()["id"])
+    period = await db_session.get(Subscription, payment.subscription_id)
+    assert payment.status == "succeeded"
+    assert period.end_date - period.start_date == timedelta(days=30)
+
+
+async def test_provider_retry_renewal_and_plan_switches(client, db_session, monkeypatch):
+    _provider_env(monkeypatch)
+    user = await _make_user(db_session, "switch-plans@example.com")
+    headers = _auth(user)
+    provider_rows = {}
+
+    def provider(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            payment_id = f"provider-{len(provider_rows) + 1}"
+            provider_rows[payment_id] = {
+                "id": payment_id,
+                "amount": json.loads(request.content)["amount"],
+            }
+            return httpx.Response(
+                200,
+                json={
+                    "id": payment_id,
+                    "confirmation": {"confirmation_url": f"https://pay.example/{payment_id}"},
+                },
+            )
+        return httpx.Response(200, json=provider_rows[request.url.path.rsplit("/", 1)[-1]])
+
+    monkeypatch.setattr(
+        yookassa_module,
+        "_client_factory",
+        lambda: httpx.AsyncClient(transport=httpx.MockTransport(provider)),
+    )
+
+    async def subscribe(plan, expected_amount=None):
+        return await client.post(
+            "/api/payment/subscribe",
+            json={"plan": plan, "expected_amount": expected_amount},
+            headers=headers,
+        )
+
+    async def finish(response, provider_status="succeeded"):
+        assert response.status_code == 201, response.text
+        body = response.json()
+        provider_id = body["provider_payment_id"]
+        provider_rows[provider_id]["status"] = provider_status
+        response = await client.post("/api/payment/webhook", json={"object": {"id": provider_id}})
+        assert response.status_code == 200, response.text
+        assert response.json()["status"] == provider_status
+        return body["id"]
+
+    async def current():
+        response = await client.get("/api/users/me/subscription", headers=headers)
+        assert response.status_code == 200, response.text
+        return response.json()
+
+    canceled = await finish(await subscribe("basic"), "canceled")
+    failed = await finish(await subscribe("basic"), "failed")
+    first = await finish(await subscribe("basic"))
+    assert len({canceled, failed, first}) == 3
+    original = datetime.fromisoformat((await current())["end_date"])
+
+    await finish(await subscribe("basic", "399.00"))
+    renewed = datetime.fromisoformat((await current())["end_date"])
+    assert renewed == original + timedelta(days=30)
+
+    quote = await client.get("/api/payment/quote", params={"plan": "advanced"}, headers=headers)
+    assert quote.status_code == 200
+    assert Decimal(quote.json()["amount"]) == Decimal("200.00")
+    assert (await subscribe("advanced", "201.00")).status_code == 409
+    await finish(await subscribe("advanced", quote.json()["amount"]))
+    upgraded = await current()
+    assert upgraded["plan"] == "advanced"
+    assert datetime.fromisoformat(upgraded["end_date"]) == renewed
+    assert upgraded["auto_renew"] is False
+
+    await finish(await subscribe("basic", "399.00"))
+    scheduled = await current()
+    assert scheduled["plan"] == "advanced"
+    assert scheduled["next_plan"] == "basic"
+    assert datetime.fromisoformat(scheduled["next_start_date"]) == renewed
+    advance = await db_session.get(Subscription, scheduled["id"])
+    basic = await db_session.scalar(
+        select(Subscription).where(
+            Subscription.user_id == user.id,
+            Subscription.start_date == renewed,
+        )
+    )
+    assert basic.end_date == renewed + timedelta(days=30)
+
+    switch_time = datetime.now(timezone.utc) - timedelta(seconds=1)
+    advance.end_date = switch_time
+    basic.start_date = switch_time
+    basic.end_date = switch_time + timedelta(days=30)
+    await db_session.commit()
+    assert (await current())["plan"] == "basic"
+
+
+async def test_provider_rejection_ends_attempt_and_allows_retry(client, db_session, monkeypatch):
+    _provider_env(monkeypatch)
+    user = await _make_user(db_session, "rejected-checkout@example.com")
+    keys = []
+
+    def provider(request: httpx.Request) -> httpx.Response:
+        keys.append(request.headers["Idempotence-Key"])
+        if len(keys) == 1:
+            return httpx.Response(400)
+        return httpx.Response(
+            200,
+            json={
+                "id": "yk-retry",
+                "confirmation": {"confirmation_url": "https://pay.example/retry"},
+            },
+        )
+
+    monkeypatch.setattr(
+        yookassa_module,
+        "_client_factory",
+        lambda: httpx.AsyncClient(transport=httpx.MockTransport(provider)),
+    )
+    headers = _auth(user)
+    first = await client.post("/api/payment/subscribe", json={"plan": "basic"}, headers=headers)
+    assert first.status_code == 502
+    retry = await client.post("/api/payment/subscribe", json={"plan": "basic"}, headers=headers)
+    assert retry.status_code == 201
+    assert keys[0] != keys[1]
+    history = await client.get("/api/payment/history", headers=headers)
+    assert [payment["status"] for payment in history.json()] == ["pending", "failed"]
+
+
+async def test_webhook_reconciles_attempt_after_provider_timeout(client, db_session, monkeypatch):
+    _provider_env(monkeypatch)
+    user = await _make_user(db_session, "lost-provider-response@example.com")
+    requests = []
+
+    def provider(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            requests.append(json.loads(request.content))
+            raise httpx.ReadTimeout("test: checkout created, response lost", request=request)
+        return httpx.Response(
+            200,
+            json={
+                "id": "yk-lost-response",
+                "amount": requests[0]["amount"],
+                "metadata": requests[0]["metadata"],
+                "status": "succeeded",
+            },
+        )
+
+    monkeypatch.setattr(
+        yookassa_module,
+        "_client_factory",
+        lambda: httpx.AsyncClient(transport=httpx.MockTransport(provider)),
+    )
+    headers = _auth(user)
+    for _ in range(2):
+        response = await client.post(
+            "/api/payment/subscribe", json={"plan": "basic"}, headers=headers
+        )
+        assert response.status_code == 502
+    assert requests[0] == requests[1]
+    assert await _count_payments(db_session, user.id) == 1
+    webhook = await client.post(
+        "/api/payment/webhook",
+        json={
+            "object": {"id": "yk-lost-response", "metadata": requests[0]["metadata"]},
+        },
+    )
+    assert webhook.json()["detail"] == "applied", webhook.text
+    assert await _count_subscriptions(db_session, user.id) == 1

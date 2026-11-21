@@ -11,7 +11,11 @@ class AdminService:
     async def get_stats(db: AsyncSession) -> dict:
         users_count = await db.execute(select(func.count(User.id)))
         subs_count = await db.execute(
-            select(func.count(Subscription.id)).where(Subscription.is_active.is_(True))
+            select(func.count(Subscription.id)).where(
+                Subscription.is_active.is_(True),
+                Subscription.start_date <= func.statement_timestamp(),
+                Subscription.end_date > func.statement_timestamp(),
+            )
         )
         products_count = await db.execute(select(func.count(StoreOffer.id)))
         stores_count = await db.execute(select(func.count(Store.id)))

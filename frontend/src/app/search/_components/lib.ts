@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type { CatalogSortOption } from '@/models/catalog';
 
 export const PER_PAGE = 20;
@@ -165,12 +164,4 @@ export function buildPageItems(page: number, totalPages: number): (number | 'gap
   return items;
 }
 
-export function apiErrorMessage(error: unknown, fallback: string): string {
-  if (axios.isAxiosError(error)) {
-    const detail = (error.response?.data as { detail?: unknown } | undefined)?.detail;
-    if (typeof detail === 'string' && detail.length > 0) {
-      return detail;
-    }
-  }
-  return fallback;
-}
+export { apiErrorMessage } from '@/shared/lib/api-error-message';

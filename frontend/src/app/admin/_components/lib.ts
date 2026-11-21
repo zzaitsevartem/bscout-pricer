@@ -7,22 +7,14 @@ export const BADGE_DANGER = 'bg-status-danger border-status-danger-border text-s
 export const BADGE_DARK = 'bg-slate text-ivory border-slate';
 export const BADGE_DEFAULT = 'bg-ivory border-border-default text-slate';
 
-export const TABLE_WRAPPER = 'overflow-x-auto border border-slate bg-ivory mb-8';
+export const TABLE_WRAPPER = 'overflow-x-auto bg-ivory mb-8';
 export const TABLE = 'w-full border-collapse text-[15px]';
-export const TABLE_HEAD_ROW = 'bg-ivory-elevated border-b border-slate';
+export const TABLE_HEAD_ROW = 'border-b border-border-input';
 export const TABLE_TH =
   'font-montserrat text-[14px] font-medium uppercase tracking-[0.04em] text-body-muted text-left px-4 py-3 whitespace-nowrap';
 export const TABLE_TD = 'px-4 py-[14px] border-b border-border-light-subtle';
 
-export function apiErrorMessage(error: unknown, fallback: string): string {
-  if (axios.isAxiosError(error)) {
-    const detail = (error.response?.data as { detail?: unknown } | undefined)?.detail;
-    if (typeof detail === 'string' && detail.length > 0) {
-      return detail;
-    }
-  }
-  return fallback;
-}
+export { apiErrorMessage } from '@/shared/lib/api-error-message';
 
 export function apiErrorStatus(error: unknown): number | undefined {
   return axios.isAxiosError(error) ? error.response?.status : undefined;

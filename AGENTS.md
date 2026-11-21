@@ -22,6 +22,23 @@ Session results and handoff context live in `gptaudits/1.md`, `2.md`, etc.
 At session start read the latest numbered audit; save the next session's results
 in the next numbered file. Keep the live task plan in `docs/plan/MASTERPLAN.md`.
 
+## Graphify (codebase graph)
+
+- Use the Graphify project graph as the first lookup for code structure: ask a
+  focused question, then use its symbol, dependency, caller, and linked-test
+  results to scope work. This avoids broad repository reads when the graph has
+  current coverage.
+- Check the graph result's `commitSha` against `git rev-parse HEAD`. If they
+  match and coverage is complete, use the graph answer without reopening those
+  unchanged files. Read current source for files changed since that commit,
+  empty/partial results, and whenever implementation details need confirmation.
+- Treat graph relationships and linked tests as navigation aids, not proof of
+  runtime behavior or complete test coverage. Verify behavior proportionally
+  to risk and follow the existing test and nested-agent instructions.
+- If the repository has no promoted graph or Graphify is unavailable, continue
+  with targeted `rg`/file reads; don't assume the graph was built or current.
+- Keep this rule brief; do not copy generated graph inventories into this file.
+
 ## Architecture
 
 - `backend/src/`: FastAPI, async SQLAlchemy, Redis, and module-based MVC.

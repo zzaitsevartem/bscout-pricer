@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { paymentApi } from './service';
 import type { PaymentCreateRequest } from './schema';
@@ -11,12 +12,27 @@ export function usePlans() {
 }
 
 export function usePaymentHistory(options?: { enabled?: boolean }) {
-  return useQuery({
+  const queryClient = useQueryClient();
+  const previousPending = useRef<number[]>([]);
+  const query = useQuery({
     queryKey: ['payment', 'history'],
     queryFn: () => paymentApi.getHistory(),
     enabled: options?.enabled ?? true,
     retry: false,
+    refetchInterval: (query) => query.state.data?.some((payment) => payment.status === 'pending') ? 3000 : false,
   });
+  useEffect(() => {
+    if (!query.data) return;
+    const completed = query.data.some((payment) =>
+      previousPending.current.includes(payment.id) && payment.status !== 'pending');
+    previousPending.current = query.data.filter((payment) => payment.status === 'pending')
+      .map((payment) => payment.id);
+    if (completed) {
+      queryClient.invalidateQueries({ queryKey: ['user', 'subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['tracking'] });
+    }
+  }, [query.data, queryClient]);
+  return query;
 }
 
 export function useSubscribe() {
@@ -24,7 +40,7 @@ export function useSubscribe() {
 
   return useMutation({
     mutationFn: (data: PaymentCreateRequest) => paymentApi.subscribe(data),
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['payment', 'history'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'subscription'] });
     },
